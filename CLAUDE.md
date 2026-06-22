@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-Requires **Node 18+** (Vite 5). This machine pins Node 12 by default — run `nvm use 22` first or commands will fail with a parse error.
+Requires **Node 18+** (Vite 5). This machine pins Node 12 by default — run `nvm use 24` first or commands will fail with a parse error.
 
 ```bash
 npm run dev                              # dev server
