@@ -39,10 +39,10 @@ export default function DestTypeDropdown({ invalid }: { invalid?: boolean }) {
           <div style={{ padding: '8px 0' }}>
             {!annual && (
               <>
-                <div style={{ padding: '6px 14px 4px', fontSize: 12, color: '#949494' }}>Select Specific Countries</div>
+                <div style={{ padding: '6px 14px 4px', fontSize: 12, color: '#949494' }}>Select by Countries</div>
                 <button onClick={() => select('countries')} style={{ ...itemBtn, padding: '10px 14px', fontSize: 16, fontWeight: 500 }}
                   onMouseOver={(e) => (e.currentTarget.style.background = '#F6F8FC')} onMouseOut={(e) => (e.currentTarget.style.background = '#fff')}>One or more countries</button>
-                <div style={{ padding: '10px 14px 4px', fontSize: 12, color: '#949494' }}>Select Region</div>
+                <div style={{ padding: '10px 14px 4px', fontSize: 12, color: '#949494' }}>Select by Area</div>
               </>
             )}
             {regions.map((o) => (
