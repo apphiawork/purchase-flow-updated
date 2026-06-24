@@ -594,10 +594,12 @@ input[type=checkbox]{accent-color:var(--blue-700)}
 
   /* Plan table → horizontal scroll; fixed columns so header + feature rows line up evenly */
   .plan-table{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .plan-table-header,.plan-row{grid-template-columns:150px 200px 200px 200px;min-width:750px}
+  .plan-table-header,.plan-row{grid-template-columns:150px 180px 180px 180px;min-width:690px}
   .plan-col,.plan-col-features{padding:16px 14px}
   .plan-row-label{padding:12px 14px}
   .plan-row-val{padding:12px 14px}
+  /* Stack the stepper below the price so it doesn't overflow the column / break dividers */
+  .plan-price-control{flex-direction:column;align-items:flex-start;gap:10px}
 
   /* Plan comparison modal table → horizontal scroll */
   .pc-table{overflow-x:auto}
