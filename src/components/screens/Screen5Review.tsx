@@ -96,7 +96,7 @@ export default function Screen5Review() {
               </ul>
             </div>
             <div style={{ marginTop: 16 }}>
-              <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', fontSize: 13, color: 'var(--gray-700)' }}>
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', fontSize: 14, color: 'var(--gray-700)' }}>
                 <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} style={{ marginTop: 2, accentColor: 'var(--blue-700)' }} />
                 <span>I have read and agree to the above declarations and the policy terms &amp; conditions.</span>
               </label>

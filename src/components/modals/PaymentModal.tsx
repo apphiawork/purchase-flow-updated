@@ -1,101 +1,73 @@
 import { useState } from 'react';
 import { usePurchaseStore } from '../../store/usePurchaseStore';
-import { fmt, formatDateDisplay, getDestinationLabel, totalCost } from '../../store/selectors';
+import { fmt, totalCost } from '../../store/selectors';
 
-const formatCard = (v: string) => v.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1  ').trim();
-const formatExpiry = (v: string) => {
-  const d = v.replace(/\D/g, '');
-  return d.length > 2 ? d.slice(0, 2) + ' / ' + d.slice(2, 4) : d;
-};
-
+/** 2C2P-hosted "Verify OTP" payment page (Figma 4326:34260).
+ *  We don't build a bespoke card form — this mirrors the 2C2P redirect screen.
+ *  Submitting the OTP (the popup's primary action) takes the user to the success page. */
 export default function PaymentModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const s = usePurchaseStore();
-  const [card, setCard] = useState({ number: '', name: '', expiry: '', cvv: '' });
-  const [processing, setProcessing] = useState(false);
+  const [otp, setOtp] = useState('');
 
   if (!open) return null;
 
-  const total = totalCost(s); // raw uses the undiscounted total here
-  const amount = fmt(total);
+  const amount = fmt(totalCost(s)); // raw uses the undiscounted total here
+  const now = new Date();
+  const txnDate = `${now.getMonth() + 1}/${now.getDate()}/${now.getFullYear()}`;
 
-  const submit = () => {
-    const num = card.number.replace(/\s/g, '');
-    if (num.length < 16 || !card.name || card.expiry.length < 4 || card.cvv.length < 3) {
-      s.showDialog('Card details incomplete', 'Please fill in all card details.');
-      return;
-    }
-    setProcessing(true);
-    setTimeout(() => { onClose(); setProcessing(false); s.completePayment(); }, 2400);
-  };
+  const submit = () => { onClose(); s.completePayment(); };
+
+  const detailRow = (label: string, value: string) => (
+    <div style={{ display: 'flex', gap: 12, fontSize: 14, lineHeight: 1.6 }}>
+      <span style={{ width: 130, textAlign: 'right', color: '#212121' }}>{label}:</span>
+      <span style={{ color: '#212121', fontWeight: 500 }}>{value}</span>
+    </div>
+  );
 
   return (
     <div className="modal-overlay open">
-      <div className="modal">
-        <div className="modal-header">
-          <div className="modal-header-left">
-            <div>
-              <div className="brand">2C2P SECURE PAYMENT</div>
-              <div className="amount-label">Total Amount</div>
-              <div className="amount">{amount}</div>
-            </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div className="modal-logo">2C2P</div>
-            <button className="modal-close" onClick={onClose}>×</button>
+      <div style={{ background: '#fff', width: 545, maxWidth: 'calc(100% - 32px)', borderRadius: 8, overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,.25)', fontFamily: "'Noto Sans',sans-serif" }}>
+        {/* Language selector */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '12px 20px 0' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: '1px solid #CBD2DA', borderRadius: 4, padding: '4px 10px', fontSize: 13, color: '#333' }}>
+            English <span style={{ fontSize: 9 }}>▼</span>
           </div>
         </div>
 
-        <div className="modal-body">
-          <div style={{ fontSize: 12, color: 'var(--gray-500)', marginBottom: 12 }}>
-            <strong style={{ color: 'var(--gray-800)', fontSize: 13 }}>UniTravel Insurance – UOI</strong><br />
-            <span>UniTravel – {getDestinationLabel(s)}, {formatDateDisplay(s.departDate)}–{formatDateDisplay(s.returnDate)}</span>
-          </div>
-          <div className="modal-tabs">
-            <button className="modal-tab active">💳 Credit/Debit Card</button>
-            <button className="modal-tab" style={{ color: 'var(--gray-300)', cursor: 'not-allowed' }}>PayNow</button>
-            <button className="modal-tab" style={{ color: 'var(--gray-300)', cursor: 'not-allowed' }}>GrabPay</button>
+        {/* Brand row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 24px 14px', borderBottom: '1px solid #E5E7EB' }}>
+          <span style={{ fontSize: 34, fontWeight: 800, color: '#0F7A73', letterSpacing: '-1px' }}>2C2P</span>
+          <span style={{ fontSize: 30, fontWeight: 800, fontStyle: 'italic', color: '#1A1F71', letterSpacing: '-0.5px' }}>VISA</span>
+        </div>
+
+        {/* OTP body */}
+        <div style={{ padding: '20px 32px 24px', textAlign: 'center' }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: '#212121', marginBottom: 12 }}>Verify OTP</h2>
+          <p style={{ fontSize: 14, color: '#444', lineHeight: 1.5, marginBottom: 20 }}>
+            Please enter your OTP in field below which has been sent to your<br />pXXXXXXXXXXXX@XXXX.com
+          </p>
+
+          <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 6, marginBottom: 22 }}>
+            {detailRow('Merchant Name', '2C2P.COM')}
+            {detailRow('Amount', amount)}
+            {detailRow('Transaction Date', txnDate)}
+            {detailRow('Card Number', '41111111****1111')}
           </div>
 
-          <div className="modal-field">
-            <label>Card Number</label>
-            <input type="text" placeholder="1234  5678  9012  3456" maxLength={19}
-              value={card.number} onChange={(e) => setCard({ ...card, number: formatCard(e.target.value) })} />
+          <div style={{ fontSize: 14, fontWeight: 700, color: '#212121', marginBottom: 12 }}>
+            Enter OTP (Test mode OTP Value is 123456) (uCZrOr):
           </div>
-          <div className="modal-field">
-            <label>Name on Card</label>
-            <input type="text" placeholder="As printed on card" value={card.name} onChange={(e) => setCard({ ...card, name: e.target.value })} />
+          <input type="password" maxLength={6} value={otp} onChange={(e) => setOtp(e.target.value)} autoFocus
+            style={{ width: '80%', maxWidth: 300, padding: '10px 12px', border: '1px solid #C9CED6', borderRadius: 4, fontSize: 16, outline: 'none', fontFamily: "'Noto Sans',sans-serif" }} />
+          <div style={{ marginTop: 14 }}>
+            <a href="#" onClick={(e) => e.preventDefault()} style={{ fontSize: 14, color: '#1A6CC4', fontWeight: 500 }}>Resend OTP</a>
           </div>
-          <div className="modal-row">
-            <div className="modal-field">
-              <label>Expiry Date</label>
-              <input type="text" placeholder="MM / YY" maxLength={7} value={card.expiry} onChange={(e) => setCard({ ...card, expiry: formatExpiry(e.target.value) })} />
-            </div>
-            <div className="modal-field">
-              <label>CVV</label>
-              <input type="password" placeholder="•••" maxLength={4} value={card.cvv} onChange={(e) => setCard({ ...card, cvv: e.target.value })} />
-            </div>
-          </div>
+        </div>
 
-          <div className="modal-secure">
-            <svg className="secure-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-            <span>256-bit SSL encrypted. Your card details are never stored.</span>
-          </div>
-
-          <button className="modal-submit" onClick={submit} disabled={processing}>
-            {processing ? <><div className="spinner" /> Processing…</> : (
-              <>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" /><line x1="1" y1="10" x2="23" y2="10" /></svg>
-                Pay <span>{amount}</span> Now
-              </>
-            )}
-          </button>
-
-          <div className="card-brands">
-            <div className="card-brand visa">VISA</div>
-            <div className="card-brand mc">MC</div>
-            <div className="card-brand">AMEX</div>
-            <div className="card-brand">UnionPay</div>
-          </div>
+        {/* Actions */}
+        <div style={{ display: 'flex', gap: 16, padding: '0 32px 28px' }}>
+          <button onClick={onClose} style={{ flex: 1, padding: '12px', background: '#9E9E9E', color: '#fff', border: 'none', borderRadius: 6, fontSize: 15, fontWeight: 500, cursor: 'pointer' }}>cancel</button>
+          <button onClick={submit} style={{ flex: 1, padding: '12px', background: '#1A6CC4', color: '#fff', border: 'none', borderRadius: 6, fontSize: 15, fontWeight: 500, cursor: 'pointer' }}>Submit</button>
         </div>
       </div>
     </div>

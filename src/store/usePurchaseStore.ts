@@ -8,11 +8,20 @@ import {
 
 const emptyApplicant = (): Applicant => ({ name: '', dob: '', nric: '', phone: '', email: '', postal: '', address: '', unit: '' });
 
+/** Annual trips run 365 days from departure — used to auto-fill the (disabled) arrival date. */
+const ANNUAL_TRIP_DAYS = 365;
+const addDays = (iso: string, n: number): string => {
+  const [y, m, d] = iso.split('-').map(Number);
+  const dt = new Date(y, m - 1, d);
+  dt.setDate(dt.getDate() + n);
+  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+};
+
 const initialState: PurchaseState = {
   currentScreen: 1,
   loading: false,
   tripType: 'single',
-  destination: '',
+  destination: 'countries', // default to first option: "One or more countries"
   selectedCountries: [],
   departDate: '',
   returnDate: '',
@@ -70,9 +79,18 @@ export const usePurchaseStore = create<PurchaseState & Actions>((set, get) => ({
   showDialog: (title, msg) => set({ dialog: { open: true, title, msg } }),
   closeDialog: () => set((s) => ({ dialog: { ...s.dialog, open: false } })),
 
-  setTripType: (tripType) => set({ tripType }),
+  setTripType: (tripType) => set((s) => {
+    if (tripType !== 'annual') return { tripType };
+    // Annual: region-only (no "one or more countries"), arrival auto-derived from departure.
+    return {
+      tripType,
+      ...(s.destination === 'countries' ? { destination: '', selectedCountries: [] } : {}),
+      ...(s.departDate ? { returnDate: addDays(s.departDate, ANNUAL_TRIP_DAYS) } : {}),
+    };
+  }),
   setSelectedCountries: (selectedCountries) => set({ selectedCountries }),
-  setDepartDate: (departDate) => set({ departDate }),
+  setDepartDate: (departDate) => set((s) =>
+    s.tripType === 'annual' ? { departDate, returnDate: addDays(departDate, ANNUAL_TRIP_DAYS) } : { departDate }),
   setReturnDate: (returnDate) => set({ returnDate }),
   setDestination: (type) =>
     set((s) => ({ destination: type, selectedCountries: type === 'countries' ? s.selectedCountries : [] })),

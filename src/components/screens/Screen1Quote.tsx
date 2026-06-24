@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { usePurchaseStore } from '../../store/usePurchaseStore';
-import { formatDateDisplay } from '../../store/selectors';
+import { formatDateDisplay, tripDurationDays } from '../../store/selectors';
 import Logo from '../Logo';
 import { HelpIcon, CalFieldIcon } from '../icons';
 import DestTypeDropdown from '../ui/DestTypeDropdown';
@@ -79,39 +79,62 @@ export default function Screen1Quote() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                 {/* Destination row */}
                 <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8, position: 'relative' }}>
+                  <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8, position: 'relative' }}>
                     <label style={{ fontSize: 14, color: '#212121' }}>Where are you travelling?</label>
                     <DestTypeDropdown />
                   </div>
                   {s.destination === 'countries' && (
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8, position: 'relative' }}>
-                      <label style={{ fontSize: 14, color: '#212121' }}>Select country(s)</label>
+                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8, position: 'relative' }}>
+                      <label style={{ fontSize: 14, color: '#212121' }}>Select countries</label>
                       <CountryMultiSelect />
                     </div>
                   )}
                 </div>
 
-                {/* Date row */}
-                <div style={{ display: 'flex', gap: 16, width: '100%' }}>
-                  {(['depart', 'return'] as const).map((which) => {
-                    const iso = which === 'depart' ? s.departDate : s.returnDate;
-                    const setIso = which === 'depart' ? s.setDepartDate : s.setReturnDate;
-                    return (
-                      <div key={which} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8, position: 'relative' }}>
-                        <label style={{ fontSize: 14, color: '#212121' }}>
-                          {which === 'depart' ? 'When are you departing Singapore?' : 'When are you arriving in Singapore?'}
-                        </label>
-                        <button onClick={() => setOpenCal((o) => (o === which ? null : which))} style={fieldBtn(openCal === which, !!iso)}>
-                          <span>{iso ? formatDateDisplay(iso) : 'DD/MM/YYYY'}</span>
-                          <CalFieldIcon />
-                        </button>
-                        {openCal === which && (
-                          <DateRangeCalendar which={which} departISO={s.departDate} selectedISO={iso}
-                            onSelect={(v) => { setIso(v); setOpenCal(null); }} />
-                        )}
-                      </div>
-                    );
-                  })}
+                {/* Date group — 12px gap between the date fields and the trip-duration line */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div style={{ display: 'flex', gap: 16, width: '100%' }}>
+                    {(['depart', 'return'] as const).map((which) => {
+                      const iso = which === 'depart' ? s.departDate : s.returnDate;
+                      const setIso = which === 'depart' ? s.setDepartDate : s.setReturnDate;
+                      // Annual trips: arrival is derived from departure (+365 days) and not editable.
+                      const annualReturn = which === 'return' && s.tripType === 'annual';
+                      return (
+                        <div key={which} style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8, position: 'relative' }}>
+                          <label style={{ fontSize: 14, color: '#212121' }}>
+                            {which === 'depart' ? 'When are you departing Singapore?' : 'When are you arriving in Singapore?'}
+                          </label>
+                          {annualReturn ? (
+                            <>
+                              <div style={{ ...fieldBtn(false, !!iso), background: '#F5F5F5', cursor: 'not-allowed' }} aria-disabled="true">
+                                <span>{iso ? formatDateDisplay(iso) : 'DD/MM/YYYY'}</span>
+                                <CalFieldIcon />
+                              </div>
+                              <span style={{ fontSize: 12, color: '#949494', lineHeight: 1.4 }}>Auto-set to 365 days from departure for annual cover.</span>
+                            </>
+                          ) : (
+                            <>
+                              <button onClick={() => setOpenCal((o) => (o === which ? null : which))} style={fieldBtn(openCal === which, !!iso)}>
+                                <span>{iso ? formatDateDisplay(iso) : 'DD/MM/YYYY'}</span>
+                                <CalFieldIcon />
+                              </button>
+                              {openCal === which && (
+                                <DateRangeCalendar which={which} departISO={s.departDate} selectedISO={iso}
+                                  onSelect={(v) => { setIso(v); setOpenCal(null); }} />
+                              )}
+                            </>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Trip duration — shown once both dates are picked */}
+                  {tripDurationDays(s) != null && (
+                    <p style={{ fontSize: 12, color: '#6E6E6E', lineHeight: 1.4, margin: 0, fontFamily: "'Noto Sans',sans-serif" }}>
+                      Total trip duration: {tripDurationDays(s)} {tripDurationDays(s) === 1 ? 'day' : 'days'}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

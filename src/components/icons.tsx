@@ -35,6 +35,11 @@ export const ChevronDown = ({ stroke = '#6E6E6E', size = 16, style }: { stroke?:
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2" style={style}><polyline points="6 9 12 15 18 9" /></svg>
 );
 
+// Solid down-triangle caret (Font Awesome "sort-down") used in the redesign date-picker header.
+export const SortDown = ({ fill = '#fff', size = 10 }: { fill?: string; size?: number }) => (
+  <svg width={size} height={size * 0.6} viewBox="0 0 10 6" fill="none"><path d="M0 0h10L5 6Z" fill={fill} /></svg>
+);
+
 export const ArrowRight = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
 );

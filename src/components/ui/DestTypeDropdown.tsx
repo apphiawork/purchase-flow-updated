@@ -16,10 +16,12 @@ const DEST_LABELS: Record<string, string> = {
 const itemBtn: React.CSSProperties = { width: '100%', textAlign: 'left', border: 'none', background: '#fff', fontFamily: "'Noto Sans',sans-serif", color: '#212121', cursor: 'pointer', transition: 'background .1s' };
 
 export default function DestTypeDropdown({ invalid }: { invalid?: boolean }) {
-  const { destination, setDestination } = usePurchaseStore();
+  const { destination, setDestination, tripType } = usePurchaseStore();
   const [open, setOpen] = useState(false);
   const ref = useOutsideClick<HTMLDivElement>(open, () => setOpen(false));
 
+  // Annual trips are region-only: no "one or more countries" option and no group headers.
+  const annual = tripType === 'annual';
   const select = (type: string) => { setDestination(type); setOpen(false); };
   const borderColor = open ? '#005EB8' : invalid ? '#991B1B' : 'rgba(0,0,0,.09)';
 
@@ -33,10 +35,14 @@ export default function DestTypeDropdown({ invalid }: { invalid?: boolean }) {
       {open && (
         <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, background: '#fff', borderRadius: 8, boxShadow: '0 1px 4px rgba(0,0,0,.05)', zIndex: 200, overflow: 'hidden' }}>
           <div style={{ padding: '8px 0' }}>
-            <div style={{ padding: '6px 14px 4px', fontSize: 12, color: '#949494' }}>Select Specific Countries</div>
-            <button onClick={() => select('countries')} style={{ ...itemBtn, padding: '10px 14px', fontSize: 16, fontWeight: 400 }}
-              onMouseOver={(e) => (e.currentTarget.style.background = '#F6F8FC')} onMouseOut={(e) => (e.currentTarget.style.background = '#fff')}>One or more countries</button>
-            <div style={{ padding: '10px 14px 4px', fontSize: 12, color: '#949494' }}>Select Region</div>
+            {!annual && (
+              <>
+                <div style={{ padding: '6px 14px 4px', fontSize: 12, color: '#949494' }}>Select Specific Countries</div>
+                <button onClick={() => select('countries')} style={{ ...itemBtn, padding: '10px 14px', fontSize: 16, fontWeight: 400 }}
+                  onMouseOver={(e) => (e.currentTarget.style.background = '#F6F8FC')} onMouseOut={(e) => (e.currentTarget.style.background = '#fff')}>One or more countries</button>
+                <div style={{ padding: '10px 14px 4px', fontSize: 12, color: '#949494' }}>Select Region</div>
+              </>
+            )}
             {REGION_OPTIONS.map((o) => (
               <button key={o.type} onClick={() => select(o.type)} style={{ ...itemBtn, padding: '8px 14px', fontSize: 16 }}
                 onMouseOver={(e) => (e.currentTarget.style.background = '#F6F8FC')} onMouseOut={(e) => (e.currentTarget.style.background = '#fff')}>

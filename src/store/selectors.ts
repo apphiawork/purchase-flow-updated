@@ -171,10 +171,16 @@ export function formatDateDisplay(d: string): string {
   return `${day}/${m}/${y}`;
 }
 
-export function getTripDays(s: PurchaseState): string {
-  if (!s.departDate || !s.returnDate) return '';
+/** Whole-day trip length (return − depart). null until both dates are set / valid. */
+export function tripDurationDays(s: PurchaseState): number | null {
+  if (!s.departDate || !s.returnDate) return null;
   const diff = (new Date(s.returnDate).getTime() - new Date(s.departDate).getTime()) / (1000 * 60 * 60 * 24);
-  return diff > 0 ? ` (${diff} days)` : '';
+  return diff > 0 ? diff : null;
+}
+
+export function getTripDays(s: PurchaseState): string {
+  const days = tripDurationDays(s);
+  return days != null ? ` (${days} days)` : '';
 }
 
 export function getDestinationLabel(s: PurchaseState): string {

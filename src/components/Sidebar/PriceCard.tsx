@@ -88,7 +88,7 @@ export default function PriceCard() {
           </div>
         </div>
         <hr className="price-divider" />
-        <div className="price-line"><span className="line-label" style={{ fontWeight: 700, color: '#212121', fontSize: 15 }}>Total (incl. GST)</span><span style={{ fontWeight: 700, fontSize: 15, color: '#212121' }}>{fmt(total)}</span></div>
+        <div className="price-line"><span className="line-label" style={{ fontWeight: 700, color: '#212121', fontSize: 16 }}>Total (incl. GST)</span><span style={{ fontWeight: 700, fontSize: 16, color: '#212121' }}>{fmt(total)}</span></div>
       </div>
     </div>
   );

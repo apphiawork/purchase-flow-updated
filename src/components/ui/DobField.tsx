@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { MONTH_NAMES, DAY_NAMES } from '../../data/constants';
 import { useOutsideClick } from '../../hooks/useOutsideClick';
-import { CalFieldIcon, ChevronDown } from '../icons';
+import { CalFieldIcon, SortDown } from '../icons';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
-/** Date-of-birth field with anchored popover (days / months / years views). */
+/** Date-of-birth field with anchored popover (days / months / years views).
+ *  Restyled to match the UniTravel redesign date-picker component (node 4326:32656). */
 export default function DobField({ value, onChange }: { value: string; onChange: (iso: string) => void }) {
   const [open, setOpen] = useState(false);
   const ref = useOutsideClick<HTMLDivElement>(open, () => setOpen(false));
@@ -42,34 +43,35 @@ export default function DobField({ value, onChange }: { value: string; onChange:
         <CalFieldIcon />
       </div>
       {open && (
-        <div style={{ position: 'absolute', zIndex: 1200, top: 'calc(100% + 6px)', left: 0, background: '#fff', border: '3px solid rgba(0,94,184,.2)', borderRadius: 8, boxShadow: '0 8px 28px rgba(0,0,0,.16)', padding: 10, width: 288 }}
-          onMouseDown={(e) => e.stopPropagation()}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#005EB8', borderRadius: 6, padding: '8px 8px', marginBottom: 8 }}>
+        <div style={{ ...popover, zIndex: 1200 }} onMouseDown={(e) => e.stopPropagation()}>
+          <div style={header}>
             <button onClick={() => stepMonth(-1)} style={navBtn}>‹</button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <button onClick={() => setNav((s) => ({ ...s, view: 'months' }))} style={headerBtn}>{MONTH_NAMES[month]} <ChevronDown stroke="#fff" size={11} /></button>
-              <button onClick={() => setNav((s) => ({ ...s, view: 'years' }))} style={headerBtn}>{year} <ChevronDown stroke="#fff" size={11} /></button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <button onClick={() => setNav((s) => ({ ...s, view: 'months' }))} style={headerBtn}>{MONTH_NAMES[month]} <SortDown /></button>
+              <button onClick={() => setNav((s) => ({ ...s, view: 'years' }))} style={headerBtn}>{year} <SortDown /></button>
             </div>
             <button onClick={() => stepMonth(1)} style={navBtn}>›</button>
           </div>
 
-          {view === 'months' && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 6, padding: 4 }}>
-              {MONTH_NAMES.map((mn, i) => (
-                <button key={mn} onClick={() => setNav((s) => ({ ...s, month: i, view: 'days' }))} style={cellBtn(i === month)}>{mn.slice(0, 3)}</button>
-              ))}
-            </div>
-          )}
+          <div style={body}>
+            {view === 'months' && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 6, padding: 4, width: '100%' }}>
+                {MONTH_NAMES.map((mn, i) => (
+                  <button key={mn} onClick={() => setNav((s) => ({ ...s, month: i, view: 'days' }))} style={cellBtn(i === month)}>{mn.slice(0, 3)}</button>
+                ))}
+              </div>
+            )}
 
-          {view === 'years' && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 6, padding: 4, maxHeight: 220, overflowY: 'auto' }}>
-              {yearsDesc(today.getFullYear()).map((yr) => (
-                <button key={yr} onClick={() => setNav((s) => ({ ...s, year: yr, view: 'months' }))} style={cellBtn(yr === year, 8)}>{yr}</button>
-              ))}
-            </div>
-          )}
+            {view === 'years' && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 6, padding: 4, maxHeight: 220, overflowY: 'auto', width: '100%' }}>
+                {yearsDesc(today.getFullYear()).map((yr) => (
+                  <button key={yr} onClick={() => setNav((s) => ({ ...s, year: yr, view: 'months' }))} style={cellBtn(yr === year, 8)}>{yr}</button>
+                ))}
+              </div>
+            )}
 
-          {view === 'days' && <DaysGrid year={year} month={month} value={value} today={today} onPick={pick} />}
+            {view === 'days' && <DaysGrid year={year} month={month} value={value} today={today} onPick={pick} />}
+          </div>
         </div>
       )}
     </div>
@@ -87,21 +89,18 @@ function DaysGrid({ year, month, value, today, onPick }: {
     const date = new Date(year, month, d); date.setHours(0, 0, 0, 0);
     const future = date > today;
     const isSel = value === `${year}-${pad(month + 1)}-${pad(d)}`;
-    const st: React.CSSProperties = {
-      width: 32, height: 32, margin: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      borderRadius: '50%', fontSize: 13, cursor: future ? 'default' : 'pointer',
-    };
-    if (isSel) Object.assign(st, { background: '#005EB8', color: '#fff', fontWeight: 600 });
+    const st: React.CSSProperties = { ...dayCell, cursor: future ? 'default' : 'pointer' };
+    if (isSel) Object.assign(st, { background: '#005EB8', color: '#fff' });
     else if (future) st.color = '#BDBDBD';
     else st.color = '#212121';
-    cells.push(<div key={d} style={st} onClick={future ? undefined : () => onPick(year, month, d)}>{d}</div>);
+    cells.push(<div key={d} style={st} onClick={future ? undefined : () => onPick(year, month, d)}>{pad(d)}</div>);
   }
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', textAlign: 'center', marginBottom: 4 }}>
-        {DAY_NAMES.map((d) => <div key={d} style={{ fontSize: 11, color: '#949494', fontWeight: 600, padding: '3px 0' }}>{d}</div>)}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', textAlign: 'center', width: '100%', marginBottom: 4 }}>
+        {DAY_NAMES.map((d) => <div key={d} style={dayName}>{d}</div>)}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 2 }}>{cells}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 2, width: '100%' }}>{cells}</div>
     </>
   );
 }
@@ -112,8 +111,13 @@ function yearsDesc(nowY: number): number[] {
   return out;
 }
 
-const navBtn: React.CSSProperties = { background: 'none', border: 'none', cursor: 'pointer', color: '#fff', fontSize: 18, lineHeight: 1, padding: '2px 6px' };
-const headerBtn: React.CSSProperties = { background: 'none', border: 'none', cursor: 'pointer', color: '#fff', fontSize: 14, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4 };
+const popover: React.CSSProperties = { position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 300, background: '#fff', borderRadius: 10, boxShadow: '0 8px 28px rgba(0,0,0,.16)', width: 265 };
+const header: React.CSSProperties = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#005EB8', borderRadius: '10px 10px 0 0', padding: '0 16px', height: 48 };
+const body: React.CSSProperties = { display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid rgba(0,0,0,.08)', borderRadius: '0 0 10px 10px', padding: 10 };
+const navBtn: React.CSSProperties = { background: 'none', border: 'none', cursor: 'pointer', color: '#fff', fontSize: 20, lineHeight: 1, padding: '0 4px' };
+const headerBtn: React.CSSProperties = { background: 'none', border: 'none', cursor: 'pointer', color: '#fff', fontSize: 18, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6, fontFamily: "'Noto Sans',sans-serif", textTransform: 'capitalize', lineHeight: '28px' };
+const dayName: React.CSSProperties = { fontSize: 14, color: '#6E6E6E', fontWeight: 700, letterSpacing: '-1px', padding: '3px 0', fontFamily: "'Noto Sans',sans-serif" };
+const dayCell: React.CSSProperties = { width: 30, height: 30, margin: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: 14, fontWeight: 500, letterSpacing: '-0.5px', fontFamily: "'Noto Sans',sans-serif" };
 const cellBtn = (sel: boolean, padV = 10): React.CSSProperties => ({
   padding: `${padV}px 4px`, border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 13,
   fontFamily: "'Noto Sans',sans-serif", background: sel ? '#005EB8' : '#fff', color: sel ? '#fff' : '#212121',

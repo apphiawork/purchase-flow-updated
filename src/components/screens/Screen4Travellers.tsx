@@ -86,10 +86,11 @@ function InsuredPersonCard({ person, idx }: { person: InsuredPerson; idx: number
   );
 }
 
-function ApplicantInput({ field, placeholder, type = 'text' }: { field: keyof Applicant; placeholder: string; type?: string }) {
+function ApplicantInput({ field, placeholder, type = 'text', disabled = false }: { field: keyof Applicant; placeholder: string; type?: string; disabled?: boolean }) {
   const s = usePurchaseStore();
   return (
-    <input type={type} className="form-input" placeholder={placeholder}
+    <input type={type} className="form-input" placeholder={placeholder} disabled={disabled}
+      style={disabled ? { background: 'var(--bg-disabled-field)', color: 'var(--text-disabled)', cursor: 'not-allowed' } : undefined}
       value={s.applicant[field]} onChange={(e) => s.updateApplicantField(field, e.target.value)} />
   );
 }
@@ -98,6 +99,7 @@ export default function Screen4Travellers() {
   const s = usePurchaseStore();
   const [bannerOpen, setBannerOpen] = useState(true);
   const [draftOpen, setDraftOpen] = useState(false);
+  const [noUnit, setNoUnit] = useState(false);
 
   return (
     <div className="screen active">
@@ -165,9 +167,10 @@ export default function Screen4Travellers() {
               </div>
               <div className="form-group">
                 <label className="form-label"><span className="req">*</span> Unit No.</label>
-                <ApplicantInput field="unit" placeholder="Enter Unit No." />
+                <ApplicantInput field="unit" placeholder="Enter Unit No." disabled={noUnit} />
                 <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--gray-500)', marginTop: 6, cursor: 'pointer' }}>
-                  <input type="checkbox" style={{ accentColor: 'var(--blue-700)' }} /> I don't have unit no.
+                  <input type="checkbox" checked={noUnit} style={{ accentColor: 'var(--blue-700)' }}
+                    onChange={(e) => { setNoUnit(e.target.checked); if (e.target.checked) s.updateApplicantField('unit', ''); }} /> I don't have unit no.
                 </label>
               </div>
             </div>
