@@ -319,7 +319,8 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .addon-icon{width:40px;height:40px;border-radius:8px;background:rgba(51,133,230,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .addon-icon svg{width:20px;height:20px}
 .addon-body{flex:1;min-width:0}
-.addon-title{font-size:16px;font-weight:600;color:#212121;display:flex;align-items:center;gap:8px}
+.addon-title{font-size:16px;font-weight:600;color:#212121;line-height:1.4}
+.addon-title .badge{vertical-align:middle}
 .addon-desc{font-size:14px;color:#6E6E6E;line-height:1.5}
 .addon-link{font-size:14px;color:#005EB8;font-weight:400}
 .addon-right{display:flex;align-items:center;gap:16px;flex-shrink:0}
@@ -555,10 +556,71 @@ input[type=checkbox]{accent-color:var(--blue-700)}
 
 @media(max-width:900px){
   .page-body{flex-direction:column;padding:20px}
-  .page-sidebar{width:100%}
+  .page-sidebar{width:100%;max-width:none}
   .action-bar{padding:14px 20px}
   .plan-table-header,.plan-row{grid-template-columns:140px 1fr 1fr 1fr}
   .s1-more,.s6-more{padding:32px 20px}
   .s1-hero-content{left:20px}
   .s1-form-card{margin:0 16px;margin-top:-60px}
+}
+
+/* ── MOBILE (≤640px) ─────────────────────────────────────── */
+@media(max-width:640px){
+  /* Screen 1 form: stack the two-up field rows, full-width fields */
+  .s1-row{flex-direction:column;align-items:stretch}
+
+  /* Top nav + step indicator: compact, circles only */
+  .top-nav{padding:0 16px;height:56px}
+  .nav-assist{display:none}
+  .step-nav{flex:1;justify-content:center}
+  .step .step-label{display:none}
+  .step-connector{width:20px;margin:0 4px}
+
+  /* Quote summary bar: wrap, total on its own line */
+  .quote-bar{flex-wrap:wrap;gap:8px 12px;padding:10px 16px;font-size:13px}
+  .quote-bar-sep{display:none}
+  .quote-bar-total{margin-left:0;width:100%;justify-content:space-between;padding-top:8px;border-top:1px solid rgba(0,0,0,.09)}
+
+  /* Page body + headings */
+  .page-body{padding:16px}
+  .page-title{font-size:24px}
+  .page-subtitle{font-size:14px;margin-bottom:20px}
+
+  /* Stack every two-column group */
+  .form-group-inline,.form-group-inline.three{grid-template-columns:1fr}
+  .review-grid{grid-template-columns:1fr;gap:14px 0}
+  .ro-addon-grid{grid-template-columns:1fr}
+  .product-grid{grid-template-columns:1fr}
+
+  /* Plan table → horizontal scroll; fixed columns so header + feature rows line up evenly */
+  .plan-table{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .plan-table-header,.plan-row{grid-template-columns:150px 200px 200px 200px;min-width:750px}
+  .plan-col,.plan-col-features{padding:16px 14px}
+  .plan-row-label{padding:12px 14px}
+  .plan-row-val{padding:12px 14px}
+
+  /* Plan comparison modal table → horizontal scroll */
+  .pc-table{overflow-x:auto}
+  .pc-thead,.pc-row{min-width:520px}
+  .pc-modal{height:92vh}
+
+  /* Action bar: stacked full-width buttons, primary first → Save Draft → Back */
+  .action-bar,.action-bar.action-bar-narrow{flex-direction:column-reverse;align-items:stretch;gap:10px;padding:12px 16px}
+  .action-bar>div{flex-direction:column-reverse;gap:10px;width:100%}
+  .action-bar button{width:100%}
+
+  /* Card padding */
+  .applicant-section,.review-section,.card{padding:16px}
+  .traveller-section-body{padding:16px}
+  .addon-card{padding:16px}
+  .addon-row{gap:12px}
+
+  /* Confirmation */
+  .confirm-body{padding:40px 16px 32px}
+  .confirm-body h1{font-size:20px}
+  .s6-more{padding:24px 16px 40px}
+  .product-card-img{width:96px}
+
+  /* Footer */
+  .site-footer{flex-direction:column;gap:4px;text-align:center;align-items:center;padding:16px}
 }

@@ -28,7 +28,7 @@ export default function DestTypeDropdown({ invalid }: { invalid?: boolean }) {
   const borderColor = open ? '#005EB8' : invalid ? '#991B1B' : 'rgba(0,0,0,.09)';
 
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
+    <div ref={ref} style={{ position: 'relative', width: '100%' }}>
       <button onClick={() => setOpen((o) => !o)} id="dest-type-btn"
         style={{ width: '100%', height: 48, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 14px', border: `1px solid ${borderColor}`, borderRadius: 8, background: '#fff', fontFamily: "'Noto Sans',sans-serif", fontSize: 15, color: destination ? '#212121' : '#949494', cursor: 'pointer', textAlign: 'left', boxShadow: open ? '0 0 0 3px rgba(0,94,184,.2)' : 'none', transition: 'border-color .15s' }}>
         <span>{destination ? DEST_LABELS[destination] : 'Select destination(s)'}</span>
@@ -39,10 +39,10 @@ export default function DestTypeDropdown({ invalid }: { invalid?: boolean }) {
           <div style={{ padding: '8px 0' }}>
             {!annual && (
               <>
-                <div style={{ padding: '6px 14px 4px', fontSize: 12, color: '#949494' }}>Select by Countries</div>
+                <div style={{ padding: '6px 14px 4px', fontSize: 12, color: '#949494' }}>Select by countries</div>
                 <button onClick={() => select('countries')} style={{ ...itemBtn, padding: '10px 14px', fontSize: 16, fontWeight: 500 }}
                   onMouseOver={(e) => (e.currentTarget.style.background = '#F6F8FC')} onMouseOut={(e) => (e.currentTarget.style.background = '#fff')}>One or more countries</button>
-                <div style={{ padding: '10px 14px 4px', fontSize: 12, color: '#949494' }}>Select by Area</div>
+                <div style={{ padding: '10px 14px 4px', fontSize: 12, color: '#949494' }}>Select by area</div>
               </>
             )}
             {regions.map((o) => (

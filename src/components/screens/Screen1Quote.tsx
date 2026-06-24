@@ -78,7 +78,7 @@ export default function Screen1Quote() {
               {/* Fields */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                 {/* Destination row */}
-                <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+                <div className="s1-row" style={{ display: 'flex', gap: 16 }}>
                   <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8, position: 'relative' }}>
                     <label style={{ fontSize: 14, color: '#212121' }}>Where are you travelling?</label>
                     <DestTypeDropdown />
@@ -93,7 +93,7 @@ export default function Screen1Quote() {
 
                 {/* Date group — 12px gap between the date fields and the trip-duration line */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <div style={{ display: 'flex', gap: 16, width: '100%' }}>
+                  <div className="s1-row" style={{ display: 'flex', gap: 16, width: '100%' }}>
                     {(['depart', 'return'] as const).map((which) => {
                       const iso = which === 'depart' ? s.departDate : s.returnDate;
                       const setIso = which === 'depart' ? s.setDepartDate : s.setReturnDate;
@@ -143,7 +143,7 @@ export default function Screen1Quote() {
 
             {/* Promo + agent */}
             <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start', width: 320 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start', width: '100%', maxWidth: 320 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start', width: '100%' }}>
                   {s.promoApplied ? (
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', height: 48, background: '#fff', border: '1px solid rgba(0,0,0,.09)', borderRadius: 8, padding: '0 8px 0 16px' }}>
