@@ -80,7 +80,8 @@ export const usePurchaseStore = create<PurchaseState & Actions>((set, get) => ({
   closeDialog: () => set((s) => ({ dialog: { ...s.dialog, open: false } })),
 
   setTripType: (tripType) => set((s) => {
-    if (tripType !== 'annual') return { tripType };
+    // Single: default back to the "one or more countries" + select-countries field.
+    if (tripType !== 'annual') return { tripType, destination: 'countries' };
     // Annual: region-only (no "one or more countries"), arrival auto-derived from departure.
     return {
       tripType,

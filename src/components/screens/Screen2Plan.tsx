@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { usePurchaseStore } from '../../store/usePurchaseStore';
 import { PLAN_FEATURES, PLAN_PRICES } from '../../data/plans';
+import { PROMO_RATE } from '../../data/constants';
 import { fmt } from '../../store/selectors';
 import type { PlanKey } from '../../types';
 import TopNav from '../layout/TopNav';
@@ -25,11 +26,11 @@ function PriceRow({ plan, type, label }: { plan: PlanKey; type: 'adult' | 'child
     <div className="plan-price-control">
       <div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-          <span className="price">{fmt(PLAN_PRICES[plan][type])}</span>
+          <span className="price">{fmt(PLAN_PRICES[plan][type] * (1 - PROMO_RATE))}</span>
           <span className="per-label">{label}</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
-          <span className="original">S$60.00</span>
+          <span className="original">{fmt(PLAN_PRICES[plan][type])}</span>
           <span className="discount">–60%</span>
         </div>
       </div>

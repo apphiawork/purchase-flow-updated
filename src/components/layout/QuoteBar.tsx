@@ -16,13 +16,13 @@ export default function QuoteBar({ showTotal = false }: { showTotal?: boolean })
       <div className="quote-bar-item">
         <CalSmIcon /> {formatDateDisplay(s.departDate)} – {formatDateDisplay(s.returnDate)}{getTripDays(s)}
       </div>
+      <button className="btn-edit-sm" onClick={() => s.goToScreen(1)}>Edit</button>
       {showTotal && (
         <div className="quote-bar-total">
-          <span className="qbt-label">Total amount</span>
+          <span className="qbt-label">Total Amount:</span>
           <span className="qbt-amount">{fmt(total)}</span>
         </div>
       )}
-      <button className="btn-edit-sm" onClick={() => s.goToScreen(1)}>Edit</button>
     </div>
   );
 }
