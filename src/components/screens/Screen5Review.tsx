@@ -35,7 +35,7 @@ export default function Screen5Review() {
       <QuoteBar />
       <div className="page-body">
         <div className="page-main">
-          <h1 className="page-title">Review &amp; Pay</h1>
+          <h1 className="page-title" style={{ marginBottom: 24 }}>Review &amp; Pay</h1>
 
           <div className="review-section">
             <div className="review-section-header">
@@ -91,13 +91,13 @@ export default function Screen5Review() {
                 <li>I am residing in Singapore</li>
                 <li>I am purchasing this travel insurance before my trip has commenced</li>
                 <li>I am not travelling against medical advice</li>
-                <li>I agree to the Terms and Conditions set in the <a href="#" onClick={(e) => e.preventDefault()}>policy wording</a></li>
-                <li>I consent to United Overseas Insurance ("UOI") in collecting, using, disclosing, and processing my personal data in accordance with UOI's <a href="#" onClick={(e) => e.preventDefault()}>privacy notice</a></li>
+                <li>I agree to the Terms and Conditions set in the <a href="https://www.uoi.com.sg/assets/web-resources/uoi/pdfs/insurance/unitravel_policywording.pdf" target="_blank" rel="noreferrer">policy wording</a></li>
+                <li>I consent to United Overseas Insurance ("UOI") in collecting, using, disclosing, and processing my personal data in accordance with UOI's <a href="https://www.uoi.com.sg/privacy.page" target="_blank" rel="noreferrer">privacy notice</a></li>
               </ul>
             </div>
             <div style={{ marginTop: 16 }}>
-              <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', fontSize: 14, color: 'var(--gray-700)' }}>
-                <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} style={{ marginTop: 2, accentColor: 'var(--blue-700)' }} />
+              <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 14, color: '#212121' }}>
+                <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} style={{ accentColor: 'var(--blue-700)' }} />
                 <span>I have read and agree to the above declarations and the policy terms &amp; conditions.</span>
               </label>
             </div>
@@ -108,7 +108,7 @@ export default function Screen5Review() {
       </div>
 
       <ActionBar narrow onBack={() => s.goToScreen(4)} onSaveDraft={() => setDraftOpen(true)}>
-        <button className="btn-primary" onClick={confirmPay} style={{ background: 'linear-gradient(135deg,#005EB8,#5C55EB)', fontSize: 15, padding: '14px 36px' }}>Confirm &amp; Pay →</button>
+        <button className="btn-primary" onClick={confirmPay}>Confirm &amp; Pay →</button>
       </ActionBar>
       <Footer />
 

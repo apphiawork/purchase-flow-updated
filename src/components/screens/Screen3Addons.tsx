@@ -75,17 +75,19 @@ function AddonCard({ ao, onCoverage }: { ao: Addon; onCoverage: (key: string) =>
 
   return (
     <div className={`addon-card ${on ? 'selected' : ''}`}>
-      <div className="addon-row">
-        <div className="addon-icon" dangerouslySetInnerHTML={{ __html: AO_ICONS[ao.key] || '' }} />
-        <div className="addon-body">
+      <div className="addon-top">
+        <div className="addon-top-left">
+          <div className="addon-icon" dangerouslySetInnerHTML={{ __html: AO_ICONS[ao.key] || '' }} />
           <div className="addon-title">{ao.name} {badge}</div>
-          <div className="addon-desc">{ao.desc}</div>
-          <a className="addon-link" href="#" onClick={(e) => { e.preventDefault(); onCoverage(ao.key); }}>View coverage details</a>
         </div>
         <div className="addon-right">
           <div className="addon-price">S$5.60{UNIT_LABEL[ao.unit]}</div>
           <Toggle checked={on} onChange={() => s.toggleAddon(ao.key)} />
         </div>
+      </div>
+      <div className="addon-text">
+        <div className="addon-desc">{ao.desc}</div>
+        <a className="addon-link" href="#" onClick={(e) => { e.preventDefault(); onCoverage(ao.key); }}>View coverage details</a>
       </div>
       {on && ao.unit === 'pax' && <PaxSelector ao={ao} />}
       {on && ao.unit === 'pet' && <PetStepper />}
@@ -105,7 +107,7 @@ export default function Screen3Addons() {
       <QuoteBar />
       <div className="page-body">
         <div className="page-main">
-          <h1 className="page-title">Select Add-Ons <span className="badge badge-green" style={{ fontSize: 11, marginLeft: 4 }}>NEW</span></h1>
+          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>Select Add-Ons <span className="badge badge-green" style={{ fontSize: 11 }}>NEW</span></h1>
           <p className="page-subtitle">Supercharge your plan coverage with exclusive add-ons</p>
           <div>
             {ADDONS.map((ao) => <AddonCard key={ao.key} ao={ao} onCoverage={setCoverageKey} />)}

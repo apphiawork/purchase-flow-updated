@@ -8,7 +8,7 @@ import CountryMultiSelect from '../ui/CountryMultiSelect';
 import DateRangeCalendar from '../ui/DateRangeCalendar';
 
 const fieldBtn = (open: boolean, filled: boolean): React.CSSProperties => ({
-  width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 14px',
+  width: '100%', height: 48, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 14px',
   border: `1px solid ${open ? '#005EB8' : 'rgba(0,0,0,.09)'}`, borderRadius: 8, background: '#fff',
   fontFamily: "'Noto Sans',sans-serif", fontSize: 15, color: filled ? '#212121' : '#949494', cursor: 'pointer',
   textAlign: 'left', boxShadow: open ? '0 0 0 3px rgba(0,94,184,.2)' : 'none', transition: 'border-color .15s',
@@ -40,7 +40,7 @@ export default function Screen1Quote() {
       {/* Header */}
       <header style={{ background: '#fff', borderBottom: '1px solid rgba(0,0,0,.09)', padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, height: 54 }}>
         <Logo />
-        <a href="#" onClick={(e) => e.preventDefault()} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: '#949494', textDecoration: 'none' }}>
+        <a href="https://www.uoi.com.sg/uoi/resources/index.page" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: '#949494', textDecoration: 'none' }}>
           <HelpIcon /> Need Assistance?
         </a>
       </header>
@@ -129,9 +129,9 @@ export default function Screen1Quote() {
                     })}
                   </div>
 
-                  {/* Trip duration — shown once both dates are picked */}
-                  {tripDurationDays(s) != null && (
-                    <p style={{ fontSize: 12, color: '#6E6E6E', lineHeight: 1.4, margin: 0, fontFamily: "'Noto Sans',sans-serif" }}>
+                  {/* Trip duration — single trips only, shown once both dates are picked */}
+                  {s.tripType !== 'annual' && tripDurationDays(s) != null && (
+                    <p style={{ fontSize: 12, color: '#949494', lineHeight: 1.4, margin: 0, fontFamily: "'Noto Sans',sans-serif" }}>
                       Total trip duration: {tripDurationDays(s)} {tripDurationDays(s) === 1 ? 'day' : 'days'}
                     </p>
                   )}

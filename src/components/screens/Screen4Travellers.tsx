@@ -30,8 +30,10 @@ function PersonAddons({ person }: { person: InsuredPerson }) {
               <label key={o.ao.key} className={cls} onClick={o.blocked ? undefined : () => s.togglePersonAddon(person.id, o.ao.key)}
                 title={o.blocked ? `Can't combine with ${o.reason}` : undefined}>
                 <span className="addon-box">{o.checked && <Tick12 />}</span>
-                {personAddonLabel(o.ao)}
-                {o.group && <span className="addon-tag">Applies to all</span>}
+                <span className="addon-label">
+                  {personAddonLabel(o.ao)}
+                  {o.group && <span className="addon-tag">Applies to all</span>}
+                </span>
               </label>
             );
           })}
@@ -49,15 +51,18 @@ function PersonAddons({ person }: { person: InsuredPerson }) {
 
 function InsuredPersonCard({ person, idx }: { person: InsuredPerson; idx: number }) {
   const s = usePurchaseStore();
+  const [collapsed, setCollapsed] = useState(false);
   const phDisabled = !!s.policyholderSlot && s.policyholderSlot !== person.id;
   const phChecked = s.policyholderSlot === person.id;
 
   return (
     <div className="traveller-section">
-      <div className="traveller-section-header">
+      <div className="traveller-section-header" onClick={() => setCollapsed((c) => !c)}>
         <h3>{person.label}</h3>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="18 15 12 9 6 15" /></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+          style={{ transform: collapsed ? 'rotate(180deg)' : undefined, transition: 'transform .2s' }}><polyline points="18 15 12 9 6 15" /></svg>
       </div>
+      {!collapsed && (
       <div className="traveller-section-body">
         <div className="form-group-inline">
           <div className="form-group">
@@ -82,6 +87,7 @@ function InsuredPersonCard({ person, idx }: { person: InsuredPerson; idx: number
         </div>
         <PersonAddons person={person} />
       </div>
+      )}
     </div>
   );
 }
@@ -154,8 +160,9 @@ export default function Screen4Travellers() {
               </div>
               <div className="form-group">
                 <label className="form-label"><span className="req">*</span> Postal Code</label>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <div style={{ flex: 1 }}><ApplicantInput field="postal" placeholder="Enter Postal Code" /></div>
+                <div className="input-button-field">
+                  <input className="ibf-input" type="text" placeholder="Enter Postal Code"
+                    value={s.applicant.postal} onChange={(e) => s.updateApplicantField('postal', e.target.value)} />
                   <button className="btn-search">Search</button>
                 </div>
               </div>
@@ -182,7 +189,7 @@ export default function Screen4Travellers() {
         <div className="page-sidebar"><PriceCard /></div>
       </div>
 
-      <ActionBar onBack={() => s.goToScreen(3)} onSaveDraft={() => setDraftOpen(true)}>
+      <ActionBar narrow onBack={() => s.goToScreen(3)} onSaveDraft={() => setDraftOpen(true)}>
         <button className="btn-primary" onClick={() => s.goToScreen5()}>Next: Review &amp; Pay →</button>
       </ActionBar>
       <Footer />

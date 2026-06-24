@@ -1,12 +1,30 @@
 import { usePurchaseStore } from '../../store/usePurchaseStore';
 import TopNav from '../layout/TopNav';
 import Footer from '../layout/Footer';
+import { ArrowRight } from '../icons';
 
+/** Cross-sell products (Figma 4326:34377) — image left, brand icon + title, price, description, CTA. */
 const PRODUCTS = [
-  { img: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=240&q=70&fit=crop', alt: 'Car', title: 'Car Insurance', icon: <path d="M5 16v2H3v-2m18 0v2h-2v-2M4 16l1.6-5.4A2 2 0 0 1 7.5 9h9a2 2 0 0 1 1.9 1.6L20 16H4z" stroke="#005EB8" strokeWidth="1.6" strokeLinejoin="round" />, desc: 'Get medical coverage for accidents and have peace of mind.', extra: <><circle cx="7.5" cy="16" r="1.3" stroke="#005EB8" strokeWidth="1.6" /><circle cx="16.5" cy="16" r="1.3" stroke="#005EB8" strokeWidth="1.6" /></> },
-  { img: 'https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?w=240&q=70&fit=crop', alt: 'Home', title: 'Home Insurance', icon: <><path d="M4 11l8-6 8 6M6 10v9h12v-9" stroke="#005EB8" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><path d="M10 19v-5h4v5" stroke="#005EB8" strokeWidth="1.6" /></>, desc: 'Protect your home and loved ones from unforeseen events.' },
-  { img: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=240&q=70&fit=crop', alt: 'Hospital', title: 'Hospital Protection', icon: <><rect x="4" y="4" width="16" height="16" rx="2" stroke="#005EB8" strokeWidth="1.6" /><path d="M12 8v8M8 12h8" stroke="#005EB8" strokeWidth="1.6" strokeLinecap="round" /></>, desc: 'Cover day-to-day hospital expenses when you need it most.' },
-  { img: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=240&q=70&fit=crop', alt: 'PA', title: 'Personal Accident', icon: <><circle cx="12" cy="8" r="3.2" stroke="#005EB8" strokeWidth="1.6" /><path d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#005EB8" strokeWidth="1.6" strokeLinecap="round" /></>, desc: 'Get medical coverage for accidents and have peace of mind.' },
+  {
+    img: '/xsell-car.png', title: 'Car Insurance',
+    desc: 'Get medical coverage for accidents and have peace of mind.',
+    icon: (<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.16667 8.33337L5.41667 4.58337H14.5833L15.8333 8.33337M14.5833 12.5C14.2518 12.5 13.9339 12.3683 13.6995 12.1339C13.465 11.8995 13.3333 11.5816 13.3333 11.25C13.3333 10.9185 13.465 10.6006 13.6995 10.3662C13.9339 10.1317 14.2518 10 14.5833 10C14.9149 10 15.2328 10.1317 15.4672 10.3662C15.7016 10.6006 15.8333 10.9185 15.8333 11.25C15.8333 11.5816 15.7016 11.8995 15.4672 12.1339C15.2328 12.3683 14.9149 12.5 14.5833 12.5ZM5.41667 12.5C5.08515 12.5 4.7672 12.3683 4.53278 12.1339C4.29836 11.8995 4.16667 11.5816 4.16667 11.25C4.16667 10.9185 4.29836 10.6006 4.53278 10.3662C4.7672 10.1317 5.08515 10 5.41667 10C5.74819 10 6.06613 10.1317 6.30055 10.3662C6.53497 10.6006 6.66667 10.9185 6.66667 11.25C6.66667 11.5816 6.53497 11.8995 6.30055 12.1339C6.06613 12.3683 5.74819 12.5 5.41667 12.5ZM15.7667 4.16671C15.6 3.68337 15.1333 3.33337 14.5833 3.33337H5.41667C4.86667 3.33337 4.4 3.68337 4.23333 4.16671L2.5 9.16671V15.8334C2.5 16.0544 2.5878 16.2664 2.74408 16.4226C2.90036 16.5789 3.11232 16.6667 3.33333 16.6667H4.16667C4.38768 16.6667 4.59964 16.5789 4.75592 16.4226C4.9122 16.2664 5 16.0544 5 15.8334V15H15V15.8334C15 16.0544 15.0878 16.2664 15.2441 16.4226C15.4004 16.5789 15.6123 16.6667 15.8333 16.6667H16.6667C16.8877 16.6667 17.0996 16.5789 17.2559 16.4226C17.4122 16.2664 17.5 16.0544 17.5 15.8334V9.16671L15.7667 4.16671Z" fill="#005EB8" /></svg>),
+  },
+  {
+    img: '/xsell-home.png', title: 'Home Insurance',
+    desc: 'Protect your home and loved ones from unforeseen events.',
+    icon: (<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M8.7487 14.1667H11.2487V12.0833H13.332V9.58333H11.2487V7.5H8.7487V9.58333H6.66536V12.0833H8.7487V14.1667ZM3.33203 17.5V7.5L9.9987 2.5L16.6654 7.5V17.5H3.33203Z" fill="#005EB8" /></svg>),
+  },
+  {
+    img: '/xsell-hospital.png', title: 'Hospital Protection',
+    desc: 'Cover day-to-day hospital expenses when you need it most.',
+    icon: (<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M16.7857 6.07143H14.6429V3.21429C14.6429 2.78571 14.3571 2.5 13.9286 2.5H6.07143C5.64286 2.5 5.35714 2.78571 5.35714 3.21429V6.07143H3.21429C2.78571 6.07143 2.5 6.35714 2.5 6.78571V16.7857C2.5 17.2143 2.78571 17.5 3.21429 17.5H16.7857C17.2143 17.5 17.5 17.2143 17.5 16.7857V6.78571C17.5 6.35714 17.2143 6.07143 16.7857 6.07143ZM6.78571 14.6429H6.07143C5.64286 14.6429 5.35714 14.3571 5.35714 13.9286C5.35714 13.5 5.64286 13.2143 6.07143 13.2143H6.78571C7.21429 13.2143 7.5 13.5 7.5 13.9286C7.5 14.3571 7.21429 14.6429 6.78571 14.6429ZM6.78571 11.7857H6.07143C5.64286 11.7857 5.35714 11.5 5.35714 11.0714C5.35714 10.6429 5.64286 10.3571 6.07143 10.3571H6.78571C7.21429 10.3571 7.5 10.6429 7.5 11.0714C7.5 11.5 7.21429 11.7857 6.78571 11.7857ZM10.3571 14.6429H9.64286C9.21429 14.6429 8.92857 14.3571 8.92857 13.9286C8.92857 13.5 9.21429 13.2143 9.64286 13.2143H10.3571C10.7857 13.2143 11.0714 13.5 11.0714 13.9286C11.0714 14.3571 10.7857 14.6429 10.3571 14.6429ZM10.3571 11.7857H9.64286C9.21429 11.7857 8.92857 11.5 8.92857 11.0714C8.92857 10.6429 9.21429 10.3571 9.64286 10.3571H10.3571C10.7857 10.3571 11.0714 10.6429 11.0714 11.0714C11.0714 11.5 10.7857 11.7857 10.3571 11.7857ZM11.0714 7.85714H10.7143V8.21429C10.7143 8.64286 10.4286 8.92857 10 8.92857C9.57143 8.92857 9.28571 8.64286 9.28571 8.21429V7.85714H8.92857C8.5 7.85714 8.21429 7.57143 8.21429 7.14286C8.21429 6.71429 8.5 6.42857 8.92857 6.42857H9.28571V6.07143C9.28571 5.64286 9.57143 5.35714 10 5.35714C10.4286 5.35714 10.7143 5.64286 10.7143 6.07143V6.42857H11.0714C11.5 6.42857 11.7857 6.71429 11.7857 7.14286C11.7857 7.57143 11.5 7.85714 11.0714 7.85714ZM13.9286 14.6429H13.2143C12.7857 14.6429 12.5 14.3571 12.5 13.9286C12.5 13.5 12.7857 13.2143 13.2143 13.2143H13.9286C14.3571 13.2143 14.6429 13.5 14.6429 13.9286C14.6429 14.3571 14.3571 14.6429 13.9286 14.6429ZM13.9286 11.7857H13.2143C12.7857 11.7857 12.5 11.5 12.5 11.0714C12.5 10.6429 12.7857 10.3571 13.2143 10.3571H13.9286C14.3571 10.3571 14.6429 10.6429 14.6429 11.0714C14.6429 11.5 14.3571 11.7857 13.9286 11.7857Z" fill="#005EB8" /></svg>),
+  },
+  {
+    img: '/xsell-pa.png', title: 'Personal Accident',
+    desc: 'Get medical coverage for accidents and have peace of mind.',
+    icon: (<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10.165 10.9375C11.1961 10.9369 12.2121 11.0577 13.2119 11.3008C14.2118 11.5439 15.1964 11.9076 16.165 12.3906C16.6179 12.6249 16.9812 12.9649 17.2549 13.4102C17.5286 13.8558 17.6657 14.3444 17.665 14.875V17.5H5.83203V17.4668C6.53604 16.9571 6.83203 16.6652 6.83203 15.7783V12.3281C6.83203 12.1125 6.78964 12.0254 6.62695 11.9648C6.42298 11.8928 6.14823 11.7908 5.84375 11.6797C6.26571 11.5319 6.69049 11.4042 7.11816 11.3008C8.11797 11.059 9.13399 10.9382 10.165 10.9375ZM5.84375 11.6797C5.83986 11.681 5.83592 11.6822 5.83203 11.6836V11.6748C5.83601 11.6763 5.83978 11.6782 5.84375 11.6797ZM10.165 2.5C11.1962 2.5 12.0792 2.86735 12.8135 3.60156C13.5479 4.33594 13.915 5.21875 13.915 6.25C13.915 7.28125 13.5479 8.16406 12.8135 8.89844C12.0791 9.63265 11.1962 10 10.165 10C9.134 9.99988 8.25086 9.6327 7.5166 8.89844C6.78239 8.16411 6.41504 7.28114 6.41504 6.25C6.41504 5.21886 6.78239 4.33589 7.5166 3.60156C8.25086 2.8673 9.134 2.50012 10.165 2.5Z" fill="#005EB8" /><path d="M3.4235 18.1585C3.36172 18.1585 3.29407 18.1291 3.197 18.0673C1.43798 16.9849 0.832031 16.6701 0.832031 15.5112V12.8285C0.832031 12.6609 0.86439 12.5961 0.993814 12.5461C1.52329 12.3343 2.72342 11.9167 3.25289 11.7078C3.32054 11.6813 3.37937 11.6666 3.4235 11.6666C3.46762 11.6666 3.52645 11.6813 3.5941 11.7078C4.12652 11.9167 5.31488 12.3549 5.85613 12.5461C5.9826 12.5932 6.01495 12.6609 6.01495 12.8285V15.5112C6.01495 16.6701 5.40606 16.979 3.65 18.0673C3.55293 18.1291 3.48527 18.1585 3.4235 18.1585Z" fill="#005EB8" /></svg>),
+  },
 ];
 
 export default function Screen6Confirm() {
@@ -15,9 +33,7 @@ export default function Screen6Confirm() {
     <div className="screen active">
       <TopNav borderless />
       <div className="confirm-body">
-        <div className="confirm-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-        </div>
+        <img src="/success.gif" alt="Payment successful" className="confirm-gif" />
         <h1>Thank you for your purchase, you're ready to go!</h1>
         <p className="subtitle">
           Thank you for insuring with United Overseas Insurance. Your Certificate of Insurance <strong className="policy-number">{s.policyNumber}</strong> will be sent to your email address <strong>{s.applicant.email || 'your registered email'}</strong> and accessible via UOI Customer Portal. For further assistance, you may contact us at 6222 7733.
@@ -33,17 +49,19 @@ export default function Screen6Confirm() {
         <div className="product-grid">
           {PRODUCTS.map((p) => (
             <div className="product-card" key={p.title}>
-              <img className="product-card-img" src={p.img} alt={p.alt} />
+              <img className="product-card-img" src={p.img} alt={p.title} />
               <div className="product-card-body">
-                <div className="product-card-head">
-                  <div className="product-card-title">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">{p.icon}{p.extra}</svg>
-                    {p.title}
+                <div className="product-card-top">
+                  <div className="product-card-head">
+                    <div className="product-card-title">
+                      <span className="product-card-icon">{p.icon}</span>
+                      <span className="pc-title-text">{p.title}</span>
+                    </div>
+                    <div className="meta">From S$X/year</div>
                   </div>
-                  <div className="meta">From S$X/year</div>
+                  <p>{p.desc}</p>
                 </div>
-                <p>{p.desc}</p>
-                <a href="#" onClick={(e) => e.preventDefault()}>Get Quote →</a>
+                <a href="#" onClick={(e) => e.preventDefault()} className="product-card-cta">Get Quote <ArrowRight /></a>
               </div>
             </div>
           ))}

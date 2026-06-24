@@ -11,7 +11,7 @@ export default function ActionBar({ onBack, onSaveDraft, children, narrow = fals
     <>
       <div style={{ flex: 1 }} />
       <div className={`action-bar ${narrow ? 'action-bar-narrow' : ''}`}>
-        <button className="btn-secondary" onClick={onBack}>Back</button>
+        <button className="btn-ghost-outline" onClick={onBack}>Back</button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <button className="btn-ghost" onClick={onSaveDraft}>Save Draft</button>
           {children}

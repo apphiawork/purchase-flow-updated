@@ -126,8 +126,17 @@ export const usePurchaseStore = create<PurchaseState & Actions>((set, get) => ({
   toggleAddon: (key) => set((s) => {
     const on = !s.addons[key];
     const addons = { ...s.addons, [key]: on };
-    const addonPax = on ? s.addonPax : { ...s.addonPax, [key]: [] };
+    let addonPax = on ? s.addonPax : { ...s.addonPax, [key]: [] };
     const petCount = key === 'pet' ? (on ? Math.max(1, s.petCount) : 0) : s.petCount;
+    // When there's a single eligible traveller (e.g. a solo trip), auto-assign it
+    // so the user doesn't have to tag the only person manually.
+    if (on) {
+      const ao = ADDONS.find((a) => a.key === key);
+      if (ao && ao.unit === 'pax' && (s.addonPax[key]?.length ?? 0) === 0) {
+        const slots = addonSlotsFor(s, ao).filter((slot) => !isSlotBlocked(s, ao, slot.id));
+        if (slots.length === 1) addonPax = { ...s.addonPax, [key]: [slots[0].id] };
+      }
+    }
     return { addons, addonPax, petCount };
   }),
 
@@ -150,11 +159,21 @@ export const usePurchaseStore = create<PurchaseState & Actions>((set, get) => ({
     const avail = addonSlotsFor(s, ao).filter((slot) => !isSlotBlocked(s, ao, slot.id));
     const sel = s.addonPax[key] || [];
     const allSel = avail.length > 0 && avail.every((slot) => sel.includes(slot.id));
-    set({ addonPax: { ...s.addonPax, [key]: allSel ? [] : avail.map((slot) => slot.id) } });
+    // "Unselect All" clears everyone → the add-on no longer applies, so switch it off too.
+    set({
+      addonPax: { ...s.addonPax, [key]: allSel ? [] : avail.map((slot) => slot.id) },
+      addons: allSel ? { ...s.addons, [key]: false } : s.addons,
+    });
   },
 
   goToScreen4: () => {
     const s = get();
+    // Block if a per-traveller add-on is switched on but tagged to nobody.
+    const unassigned = ADDONS.find((ao) => ao.unit === 'pax' && s.addons[ao.key] && (s.addonPax[ao.key]?.length ?? 0) === 0);
+    if (unassigned) {
+      get().showDialog('Add-on not assigned', `You've added "${unassigned.name}" but haven't assigned it to any traveller. Please select at least one traveller for it, or remove the add-on.`);
+      return;
+    }
     set({ insuredPersons: buildInsuredPersons(s), currentScreen: 4 });
     window.scrollTo(0, 0);
   },

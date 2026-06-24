@@ -36,8 +36,8 @@ export default function PaymentModal({ open, onClose }: { open: boolean; onClose
 
         {/* Brand row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 24px 14px', borderBottom: '1px solid #E5E7EB' }}>
-          <span style={{ fontSize: 34, fontWeight: 800, color: '#0F7A73', letterSpacing: '-1px' }}>2C2P</span>
-          <span style={{ fontSize: 30, fontWeight: 800, fontStyle: 'italic', color: '#1A1F71', letterSpacing: '-0.5px' }}>VISA</span>
+          <span style={{ fontSize: 34, fontWeight: 700, color: '#0F7A73', letterSpacing: '-1px' }}>2C2P</span>
+          <span style={{ fontSize: 30, fontWeight: 700, fontStyle: 'italic', color: '#1A1F71', letterSpacing: '-0.5px' }}>VISA</span>
         </div>
 
         {/* OTP body */}

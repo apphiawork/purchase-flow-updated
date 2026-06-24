@@ -9,7 +9,7 @@ export default function TopNav({ stepNum, borderless = false }: { stepNum?: numb
     <nav className="top-nav" style={borderless ? { borderBottom: 'none' } : undefined}>
       <Logo />
       {stepNum !== undefined && <StepNav stepNum={stepNum} />}
-      <a href="#" className="nav-assist" onClick={(e) => e.preventDefault()}>
+      <a href="https://www.uoi.com.sg/uoi/resources/index.page" target="_blank" rel="noopener noreferrer" className="nav-assist">
         <HelpIcon /> Need Assistance?
       </a>
     </nav>

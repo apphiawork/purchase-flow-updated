@@ -47,7 +47,7 @@ export default function Screen2Plan() {
   return (
     <div className="screen active">
       <TopNav stepNum={1} />
-      <QuoteBar />
+      <QuoteBar showTotal />
       <div className="page-body">
         <div className="page-main">
           <h1 className="page-title">Select Plan</h1>

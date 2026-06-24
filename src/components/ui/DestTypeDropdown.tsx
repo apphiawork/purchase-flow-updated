@@ -5,7 +5,7 @@ import { ChevronDown } from '../icons';
 
 const REGION_OPTIONS: { type: string; label: string; desc: string }[] = [
   { type: 'asean', label: 'ASEAN', desc: 'Covers Brunei, Cambodia, Indonesia, Laos, Malaysia, Myanmar, Philippines, Thailand and Vietnam' },
-  { type: 'asia', label: 'Asia, Australia, New Zealand', desc: 'Covers ASEAN countries, Australia, China (excluding Tibet), Hong Kong, India, Japan, South Korea, Macau, New Zealand, Sri Lanka and Taiwan' },
+  { type: 'asia', label: 'Asia, Australia, New Zealand', desc: 'Covers Brunei, Cambodia, Indonesia, Laos, Malaysia, Myanmar, Philippines, Thailand, Vietnam, Australia, China (excluding Tibet), Hong Kong, India, Japan, South Korea, Macau, New Zealand, Sri Lanka and Taiwan' },
   { type: 'worldwide', label: 'Worldwide', desc: 'Covers all countries outside Singapore except Afghanistan, Iran, Iraq, Libya, Nepal, North Korea, Sudan, Syria, Democratic Republic of Congo, Somalia and Yemen' },
 ];
 
@@ -20,15 +20,17 @@ export default function DestTypeDropdown({ invalid }: { invalid?: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useOutsideClick<HTMLDivElement>(open, () => setOpen(false));
 
-  // Annual trips are region-only: no "one or more countries" option and no group headers.
+  // Annual trips are region-only: no "one or more countries" option, no group headers,
+  // and only "Asia, Australia, New Zealand" (which subsumes ASEAN) + "Worldwide".
   const annual = tripType === 'annual';
+  const regions = annual ? REGION_OPTIONS.filter((o) => o.type !== 'asean') : REGION_OPTIONS;
   const select = (type: string) => { setDestination(type); setOpen(false); };
   const borderColor = open ? '#005EB8' : invalid ? '#991B1B' : 'rgba(0,0,0,.09)';
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button onClick={() => setOpen((o) => !o)} id="dest-type-btn"
-        style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 14px', border: `1px solid ${borderColor}`, borderRadius: 8, background: '#fff', fontFamily: "'Noto Sans',sans-serif", fontSize: 15, color: destination ? '#212121' : '#949494', cursor: 'pointer', textAlign: 'left', boxShadow: open ? '0 0 0 3px rgba(0,94,184,.2)' : 'none', transition: 'border-color .15s' }}>
+        style={{ width: '100%', height: 48, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 14px', border: `1px solid ${borderColor}`, borderRadius: 8, background: '#fff', fontFamily: "'Noto Sans',sans-serif", fontSize: 15, color: destination ? '#212121' : '#949494', cursor: 'pointer', textAlign: 'left', boxShadow: open ? '0 0 0 3px rgba(0,94,184,.2)' : 'none', transition: 'border-color .15s' }}>
         <span>{destination ? DEST_LABELS[destination] : 'Select destination(s)'}</span>
         <ChevronDown style={{ flexShrink: 0, transition: 'transform .2s', transform: open ? 'rotate(180deg)' : undefined }} />
       </button>
@@ -38,12 +40,12 @@ export default function DestTypeDropdown({ invalid }: { invalid?: boolean }) {
             {!annual && (
               <>
                 <div style={{ padding: '6px 14px 4px', fontSize: 12, color: '#949494' }}>Select Specific Countries</div>
-                <button onClick={() => select('countries')} style={{ ...itemBtn, padding: '10px 14px', fontSize: 16, fontWeight: 400 }}
+                <button onClick={() => select('countries')} style={{ ...itemBtn, padding: '10px 14px', fontSize: 16, fontWeight: 500 }}
                   onMouseOver={(e) => (e.currentTarget.style.background = '#F6F8FC')} onMouseOut={(e) => (e.currentTarget.style.background = '#fff')}>One or more countries</button>
                 <div style={{ padding: '10px 14px 4px', fontSize: 12, color: '#949494' }}>Select Region</div>
               </>
             )}
-            {REGION_OPTIONS.map((o) => (
+            {regions.map((o) => (
               <button key={o.type} onClick={() => select(o.type)} style={{ ...itemBtn, padding: '8px 14px', fontSize: 16 }}
                 onMouseOver={(e) => (e.currentTarget.style.background = '#F6F8FC')} onMouseOut={(e) => (e.currentTarget.style.background = '#fff')}>
                 <div style={{ fontWeight: 500, fontSize: 16 }}>{o.label}</div>

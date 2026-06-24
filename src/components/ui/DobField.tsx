@@ -38,7 +38,7 @@ export default function DobField({ value, onChange }: { value: string; onChange:
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
-      <div className="date-field" onClick={openPicker}>
+      <div className={`date-field ${open ? 'open' : ''}`} onClick={openPicker}>
         <span className={`date-val ${value ? 'filled' : ''}`}>{display}</span>
         <CalFieldIcon />
       </div>

@@ -40,15 +40,15 @@ export default function CountryMultiSelect() {
   return (
     <div ref={ref} style={{ position: 'relative', width: '100%', minWidth: 0 }}>
       <button onClick={() => setOpen((o) => !o)}
-        style={{ width: '100%', minWidth: 0, height: hasSel ? 48 : undefined, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '11px 14px', border: `1px solid ${open ? '#005EB8' : 'rgba(0,0,0,.09)'}`, borderRadius: 8, background: '#fff', fontFamily: "'Noto Sans',sans-serif", fontSize: 15, color: hasSel ? '#212121' : '#949494', cursor: 'pointer', textAlign: 'left', boxShadow: open ? '0 0 0 3px rgba(0,94,184,.2)' : 'none', transition: 'border-color .15s' }}>
+        style={{ width: '100%', minWidth: 0, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '0 14px', border: `1px solid ${open ? '#005EB8' : 'rgba(0,0,0,.09)'}`, borderRadius: 8, background: '#fff', fontFamily: "'Noto Sans',sans-serif", fontSize: 15, color: hasSel ? '#212121' : '#949494', cursor: 'pointer', textAlign: 'left', boxShadow: open ? '0 0 0 3px rgba(0,94,184,.2)' : 'none', transition: 'border-color .15s' }}>
         <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
         <ChevronDown style={{ flexShrink: 0, transition: 'transform .2s', transform: open ? 'rotate(180deg)' : undefined }} />
       </button>
       {open && (
         <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, background: '#fff', borderRadius: 8, boxShadow: '0 1px 4px rgba(0,0,0,.05)', zIndex: 200, overflow: 'hidden' }}>
-          <div style={{ padding: '8px 12px', borderBottom: '1px solid #F6F8FC' }}>
+          <div style={{ padding: '0 12px', borderBottom: '1px solid #F6F8FC' }}>
             <input type="text" placeholder="Search..." value={query} onChange={(e) => setQuery(e.target.value)} autoFocus
-              style={{ width: '100%', border: 'none', outline: 'none', fontSize: 14, fontFamily: "'Noto Sans',sans-serif", color: '#212121', background: 'transparent' }} />
+              style={{ width: '100%', height: 48, border: 'none', outline: 'none', fontSize: 14, fontFamily: "'Noto Sans',sans-serif", color: '#212121', background: 'transparent' }} />
           </div>
           <div style={{ maxHeight: 220, overflowY: 'auto' }}>
             {!q && popular.length > 0 && <div style={sectionLabel}>Popular Destinations</div>}
