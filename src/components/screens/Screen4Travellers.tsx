@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { usePurchaseStore } from '../../store/usePurchaseStore';
-import { personAddonLabel, personAddonOptions } from '../../store/selectors';
+import { addonsForSlot, personAddonLabel } from '../../store/selectors';
 import type { Applicant, InsuredPerson } from '../../types';
 import TopNav from '../layout/TopNav';
 import QuoteBar from '../layout/QuoteBar';
@@ -11,40 +11,17 @@ import DobField from '../ui/DobField';
 import SaveDraftModal from '../modals/SaveDraftModal';
 import { CloseIcon } from '../icons';
 
-const Tick12 = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="5 12 10 17 19 7" /></svg>
-);
-
+/** Read-only summary of the add-ons picked earlier; editing sends the user back to the Add-Ons page. */
 function PersonAddons({ person }: { person: InsuredPerson }) {
   const s = usePurchaseStore();
-  const opts = personAddonOptions(s, person);
-  const blocked = opts.filter((o) => o.blocked);
+  const addons = addonsForSlot(s, person.id).map(personAddonLabel);
   return (
     <div className="ro-addon-section">
-      <div className="ro-addon-head"><span>Add-On(s) for this traveller</span></div>
-      {opts.length ? (
-        <div className="ro-addon-grid">
-          {opts.map((o) => {
-            const cls = ['addon-check', o.checked ? 'checked' : '', o.blocked ? 'blocked' : ''].filter(Boolean).join(' ');
-            return (
-              <label key={o.ao.key} className={cls} onClick={o.blocked ? undefined : () => s.togglePersonAddon(person.id, o.ao.key)}
-                title={o.blocked ? `Can't combine with ${o.reason}` : undefined}>
-                <span className="addon-box">{o.checked && <Tick12 />}</span>
-                <span className="addon-label">
-                  {personAddonLabel(o.ao)}
-                  {o.group && <span className="addon-tag">Applies to all</span>}
-                </span>
-              </label>
-            );
-          })}
-        </div>
-      ) : <div className="ro-addon-empty">No add-ons available for this traveller.</div>}
-      {blocked.length > 0 && (
-        <div className="td-alert">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.333a6.667 6.667 0 1 0 0 13.334A6.667 6.667 0 0 0 8 1.333Z" fill="#FFA826" /><path d="M8 5v3.5M8 11h.007" stroke="#fff" strokeWidth="1.3" strokeLinecap="round" /></svg>
-          <span>{blocked.map((o) => personAddonLabel(o.ao)).join(', ')} can't be combined with {blocked[0].reason} for this traveller.</span>
-        </div>
-      )}
+      <div className="ro-addon-head">
+        <span>Selected Add-On(s)</span>
+        <button className="text-link" onClick={() => s.goToScreen(3)}>Edit</button>
+      </div>
+      <div className="ro-addon-list">{addons.length ? addons.join(', ') : 'None'}</div>
     </div>
   );
 }
@@ -114,7 +91,7 @@ export default function Screen4Travellers() {
       <div className="page-body">
         <div className="page-main">
           <h1 className="page-title">Enter Traveller Details</h1>
-          <p className="page-subtitle">Enter the details and assign the chosen add-ons to each traveller.</p>
+          <p className="page-subtitle">Enter the details for each traveller.</p>
 
           {bannerOpen && (
             <div className="login-banner">

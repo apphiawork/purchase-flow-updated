@@ -15,6 +15,16 @@ export const ADDONS: Addon[] = [
   { key: 'pet', name: 'Pet Care Support', unit: 'pet', desc: "Up to S$2,000 for unexpected vet bills and emergency boarding fees while you're away. Covers pets left at home under one flat fee." },
 ];
 
+/** Add-On category tabs (Figma 4326:30855). */
+export const AO_CATEGORIES: { key: string; label: string; keys: string[] }[] = [
+  { key: 'recommended', label: 'Recommended', keys: ['cfar', 'prex'] },
+  { key: 'lifestyle', label: 'Lifestyle', keys: ['preg', 'rental', 'pet'] },
+  { key: 'activities', label: 'Activities & Sports', keys: ['ski', 'adv', 'golf'] },
+];
+/** Which tab an add-on lives under (used to deep-link the "Select traveller" prompt). */
+export const addonTabFor = (key: string): string =>
+  AO_CATEGORIES.find((c) => c.keys.includes(key))?.key ?? 'recommended';
+
 /** If a traveller already has add-on KEY, the listed add-ons cannot be added for that traveller. */
 export const ADDON_CONFLICTS: Record<string, string[]> = {
   preg: ['prex', 'ski', 'adv', 'golf'], // pregnant traveller can't have these

@@ -80,7 +80,7 @@
 
 /* ── RESET ────────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:15px}
+html{font-size:15px;scrollbar-gutter:stable}
 body{font-family:'Noto Sans',sans-serif;background:var(--bg);color:var(--text-primary);min-height:100vh;display:flex;flex-direction:column}
 input,select,textarea,button{font-family:inherit;font-size:inherit}
 /* Placeholder / pre-fill hint text uses color-text-tertiary across all screens. */
@@ -143,7 +143,7 @@ a:hover{text-decoration:underline}
 .card+.card{margin-top:16px}
 
 /* ── SIDEBAR PRICE CARD ───────────────────────────────────── */
-.price-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);overflow:hidden;position:sticky;top:24px}
+.price-card{background:var(--white);border-radius:var(--radius-lg);box-shadow:0 1px 4px rgba(0,0,0,.05);overflow:hidden;position:sticky;top:24px}
 .price-card-header{background:var(--blue-700);color:#fff;padding:16px 20px}
 .price-card-header .label{font-size:14px;font-weight:700;margin-bottom:6px}
 .price-card-header .amount{font-size:28px;font-weight:700;line-height:1}
@@ -313,14 +313,20 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .ao-chip:hover{border-color:#005EB8}
 .ao-chip.selected{background:#005EB8;border-color:#005EB8;color:#fff}
 .ao-chip.disabled{background:#F5F5F5;border-color:rgba(0,0,0,.09);color:#BDBDBD;cursor:not-allowed}
-.ao-warning{display:flex;align-items:center;gap:8px;background:#FFF8EC;border-radius:8px;padding:10px 14px;margin-top:12px;font-size:13px;color:#212121}
-.ao-warning svg{flex-shrink:0}
+.ao-warning{display:flex;align-items:flex-start;gap:10px;background:#FFF8EC;border-radius:8px;padding:12px 14px;margin-top:12px;font-size:14px;line-height:1.5;color:#212121}
+.ao-warning svg{flex-shrink:0;margin-top:1px}
+
+/* Add-On category tabs (Figma 4326:30855) */
+.ao-tabs{display:flex;gap:24px;border-bottom:1px solid rgba(0,0,0,.09);margin-bottom:20px}
+.ao-tab{background:none;border:none;padding:10px 0;font-size:14px;font-weight:500;color:#6E6E6E;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s}
+.ao-tab:hover{color:#005EB8}
+.ao-tab.active{color:#005EB8;border-bottom-color:#005EB8}
 .addon-card+.addon-card{margin-top:16px}
 .addon-icon{width:40px;height:40px;border-radius:8px;background:rgba(51,133,230,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .addon-icon svg{width:20px;height:20px}
 .addon-body{flex:1;min-width:0}
 .addon-title{font-size:16px;font-weight:600;color:#212121;line-height:1.4}
-.addon-title .badge{vertical-align:middle}
+.addon-title .badge{vertical-align:middle;margin-left:8px}
 .addon-desc{font-size:14px;color:#6E6E6E;line-height:1.5}
 .addon-link{font-size:14px;color:#005EB8;font-weight:400}
 .addon-right{display:flex;align-items:center;gap:16px;flex-shrink:0}
@@ -336,6 +342,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .ro-addon-section{margin-top:20px;padding-top:20px;border-top:1px solid rgba(0,0,0,.09)}
 .ro-addon-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .ro-addon-head span{font-size:15px;font-weight:700;color:#212121}
+.ro-addon-list{font-size:14px;color:#212121;line-height:1.5}
 .ro-addon-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px}
 .addon-check{display:flex;align-items:center;gap:10px;font-size:14px;color:#212121;cursor:pointer;user-select:none}
 .addon-box{width:20px;height:20px;border-radius:5px;background:#fff;border:1.5px solid rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;transition:.15s}
@@ -435,7 +442,9 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .input-button-field:focus-within{border-color:#005EB8;box-shadow:0 0 0 3px rgba(0,94,184,.1)}
 .ibf-input{flex:1;min-width:0;height:100%;border:none;outline:none;background:transparent;font-size:16px;font-family:'Noto Sans',sans-serif;color:#212121}
 .ibf-input::placeholder{color:#949494}
-.input-button-field .btn-search{height:32px;padding:0 16px;flex-shrink:0}
+/* Action button inside an input field is text-only (Figma 4509:24084) */
+.input-button-field .btn-search{height:auto;padding:0 6px;border:none;background:none;box-shadow:none;flex-shrink:0}
+.input-button-field .btn-search:hover{background:none}
 .confirm-body h1{font-size:28px;font-weight:700;text-align:center;margin-bottom:12px}
 .confirm-body .subtitle{font-size:16px;color:var(--gray-500);text-align:center;max-width:720px;line-height:1.6;margin-bottom:28px}
 .policy-number{font-size:16px;font-weight:700;color:var(--blue-700);letter-spacing:.5px}

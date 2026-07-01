@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { usePurchaseStore } from '../../store/usePurchaseStore';
-import { ADDONS, AO_ICONS, UNIT_LABEL } from '../../data/addons';
+import { ADDONS, AO_CATEGORIES, AO_ICONS, UNIT_LABEL } from '../../data/addons';
 import { addonSlotsFor, conflictReason, isSlotBlocked, slotChipLabel } from '../../store/selectors';
 import type { Addon } from '../../types';
 import TopNav from '../layout/TopNav';
@@ -15,7 +15,7 @@ import SaveDraftModal from '../modals/SaveDraftModal';
 import { Tick } from '../icons';
 
 const WarnIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#F09252" strokeWidth="1.3" /><path d="M8 4.5v4M8 11h.01" stroke="#F09252" strokeWidth="1.3" strokeLinecap="round" /></svg>
+  <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 1.667a8.333 8.333 0 1 0 0 16.666 8.333 8.333 0 0 0 0-16.666Z" fill="#FFA826" /><path d="M10 6v4.5M10 13.5h.008" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" /></svg>
 );
 
 function PaxSelector({ ao }: { ao: Addon }) {
@@ -47,7 +47,7 @@ function PaxSelector({ ao }: { ao: Addon }) {
       {disabled.length > 0 && (
         <div className="ao-warning">
           <WarnIcon />
-          <span>{disabled.map(slotChipLabel).join(', ')} {disabled.length > 1 ? 'are' : 'is'} unavailable — {ao.name} can't combine with {conflictReason(s, ao, disabled[0].id)}.</span>
+          <span>{disabled.map(slotChipLabel).join(', ')} cannot be selected: {ao.name.replace(' Activities', '')} coverage cannot be combined with {conflictReason(s, ao, disabled[0].id)}</span>
         </div>
       )}
     </div>
@@ -78,7 +78,7 @@ function AddonCard({ ao, onCoverage }: { ao: Addon; onCoverage: (key: string) =>
       <div className="addon-top">
         <div className="addon-top-left">
           <div className="addon-icon" dangerouslySetInnerHTML={{ __html: AO_ICONS[ao.key] || '' }} />
-          <div className="addon-title">{ao.name} {badge}</div>
+          <div className="addon-title">{ao.name}{badge}</div>
         </div>
         <div className="addon-right">
           <div className="addon-price">S$5.60{UNIT_LABEL[ao.unit]}</div>
@@ -99,7 +99,11 @@ export default function Screen3Addons() {
   const s = usePurchaseStore();
   const [coverageKey, setCoverageKey] = useState<string | null>(null);
   const [draftOpen, setDraftOpen] = useState(false);
+  const tab = s.addonTab;
   const anySelected = ADDONS.some((ao) => s.addons[ao.key]);
+
+  const activeKeys = AO_CATEGORIES.find((t) => t.key === tab)!.keys;
+  const visible = ADDONS.filter((ao) => activeKeys.includes(ao.key));
 
   return (
     <div className="screen active">
@@ -109,8 +113,13 @@ export default function Screen3Addons() {
         <div className="page-main">
           <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>Select Add-Ons <span className="badge badge-green" style={{ fontSize: 11 }}>NEW</span></h1>
           <p className="page-subtitle">Supercharge your plan coverage with exclusive add-ons</p>
+          <div className="ao-tabs">
+            {AO_CATEGORIES.map((t) => (
+              <button key={t.key} className={`ao-tab ${tab === t.key ? 'active' : ''}`} onClick={() => s.setAddonTab(t.key)}>{t.label}</button>
+            ))}
+          </div>
           <div>
-            {ADDONS.map((ao) => <AddonCard key={ao.key} ao={ao} onCoverage={setCoverageKey} />)}
+            {visible.map((ao) => <AddonCard key={ao.key} ao={ao} onCoverage={setCoverageKey} />)}
           </div>
         </div>
         <div className="page-sidebar"><PriceCard /></div>

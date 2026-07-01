@@ -21,8 +21,12 @@ export default function DateRangeCalendar({ which, departISO, selectedISO, onSel
   onSelect: (iso: string) => void;
 }) {
   const now = new Date();
-  const [view, setView] = useState<{ year: number; month: number; mode: 'days' | 'months' | 'years' }>(
-    { year: now.getFullYear(), month: now.getMonth(), mode: 'days' });
+  // Anchor the return calendar to the departure month so it opens on the relevant month.
+  const [view, setView] = useState<{ year: number; month: number; mode: 'days' | 'months' | 'years' }>(() => {
+    const anchor = which === 'return' && departISO ? parseISO(departISO) : null;
+    const base = anchor ?? now;
+    return { year: base.getFullYear(), month: base.getMonth(), mode: 'days' };
+  });
 
   const nav = (dir: number) => setView((v) => {
     let month = v.month + dir, year = v.year;

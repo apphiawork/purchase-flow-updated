@@ -1,5 +1,5 @@
 import { usePurchaseStore } from '../../store/usePurchaseStore';
-import { ADDONS } from '../../data/addons';
+import { ADDONS, addonTabFor } from '../../data/addons';
 import { PLAN_PRICES } from '../../data/plans';
 import { PROMO_CODE, PROMO_RATE } from '../../data/constants';
 import type { PlanKey } from '../../types';
@@ -45,7 +45,7 @@ function AddonLines() {
           const n = paxCount(s, ao.key);
           qty = n > 0 ? `x ${paxQtyLabel(s, ao.key)}` : 'x [0 selected]';
           right = n > 0 ? fmt(addonUnitCost(s, ao)) : (
-            <span onClick={() => s.goToScreen(3)} style={{ color: '#F09252', fontWeight: 500, fontSize: 12, cursor: 'pointer', textDecoration: 'underline' }}>Select traveller</span>
+            <span onClick={() => { s.setAddonTab(addonTabFor(ao.key)); s.goToScreen(3); }} style={{ color: '#F09252', fontWeight: 500, fontSize: 12, cursor: 'pointer', textDecoration: 'underline' }}>Select traveller</span>
           );
         }
         return (

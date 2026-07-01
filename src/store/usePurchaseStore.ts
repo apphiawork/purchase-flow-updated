@@ -29,6 +29,7 @@ const initialState: PurchaseState = {
   planCounts: { value: { adult: 0, child: 0 }, plus: { adult: 0, child: 0 }, pro: { adult: 0, child: 0 } },
   addons: {},
   addonPax: {},
+  addonTab: 'recommended',
   petCount: 0,
   policyholderSlot: null,
   addonSlots: [],
@@ -57,6 +58,7 @@ interface Actions {
   goToScreen3: () => void;
 
   toggleAddon: (key: string) => void;
+  setAddonTab: (tab: string) => void;
   adjustPetCount: (delta: number) => void;
   toggleAddonTraveller: (key: string, slotId: string) => void;
   selectAllTravellers: (key: string) => void;
@@ -140,6 +142,8 @@ export const usePurchaseStore = create<PurchaseState & Actions>((set, get) => ({
     }
     return { addons, addonPax, petCount };
   }),
+
+  setAddonTab: (addonTab) => set({ addonTab }),
 
   adjustPetCount: (delta) => set((s) => ({ petCount: Math.min(20, Math.max(1, s.petCount + delta)) })),
 

@@ -8,7 +8,7 @@ function makeState(over: Partial<PurchaseState> = {}): PurchaseState {
     currentScreen: 2, loading: false, tripType: 'single', destination: 'asean', selectedCountries: [],
     departDate: '', returnDate: '', promoApplied: true,
     planCounts: { value: { adult: 0, child: 0 }, plus: { adult: 0, child: 0 }, pro: { adult: 0, child: 0 } },
-    addons: {}, addonPax: {}, petCount: 0, policyholderSlot: null, addonSlots: [], insuredPersons: [],
+    addons: {}, addonPax: {}, addonTab: 'recommended', petCount: 0, policyholderSlot: null, addonSlots: [], insuredPersons: [],
     applicant: { name: '', dob: '', nric: '', phone: '', email: '', postal: '', address: '', unit: '' },
     policyNumber: '', dialog: { open: false, title: '', msg: '' },
   };

@@ -67,6 +67,7 @@ export interface PurchaseState {
 
   addons: Record<string, boolean>;
   addonPax: Record<string, string[]>;
+  addonTab: string;
   petCount: number;
   policyholderSlot: string | null;
 

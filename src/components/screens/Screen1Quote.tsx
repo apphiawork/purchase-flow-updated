@@ -189,4 +189,5 @@ export default function Screen1Quote() {
   );
 }
 
-const promoApplyBtn: React.CSSProperties = { border: '1px solid #005EB8', borderRadius: 8, background: '#fff', color: '#005EB8', fontSize: 14, fontWeight: 500, height: 32, padding: '8px 16px', cursor: 'pointer', fontFamily: "'Noto Sans',sans-serif", boxShadow: '0 1px 4px rgba(0,0,0,.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' };
+// Text-only action button inside an input field (Figma 4509:24084).
+const promoApplyBtn: React.CSSProperties = { border: 'none', background: 'none', color: '#005EB8', fontSize: 14, fontWeight: 500, padding: '0 6px', cursor: 'pointer', fontFamily: "'Noto Sans',sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center' };
