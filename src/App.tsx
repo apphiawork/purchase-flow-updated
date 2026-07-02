@@ -7,6 +7,7 @@ import Screen4Travellers from './components/screens/Screen4Travellers';
 import Screen5Review from './components/screens/Screen5Review';
 import Screen6Confirm from './components/screens/Screen6Confirm';
 import Dialog from './components/ui/Dialog';
+import Toast from './components/ui/Toast';
 
 export default function App() {
   const { currentScreen, loading } = usePurchaseStore();
@@ -25,6 +26,7 @@ export default function App() {
     <>
       {screen}
       <Dialog />
+      <Toast />
     </>
   );
 }

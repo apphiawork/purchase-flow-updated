@@ -118,8 +118,8 @@ const popover: React.CSSProperties = { position: 'absolute', top: 'calc(100% + 4
 const header: React.CSSProperties = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#005EB8', borderRadius: '10px 10px 0 0', padding: '0 16px', height: 48 };
 const body: React.CSSProperties = { display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid rgba(0,0,0,.08)', borderRadius: '0 0 10px 10px', padding: 10 };
 const navBtn: React.CSSProperties = { background: 'none', border: 'none', cursor: 'pointer', color: '#fff', fontSize: 20, lineHeight: 1, padding: '0 4px' };
-const headerBtn: React.CSSProperties = { background: 'none', border: 'none', cursor: 'pointer', color: '#fff', fontSize: 18, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6, fontFamily: "'Noto Sans',sans-serif", textTransform: 'capitalize', lineHeight: '28px' };
-const dayName: React.CSSProperties = { fontSize: 14, color: '#6E6E6E', fontWeight: 700, letterSpacing: '-1px', padding: '3px 0', fontFamily: "'Noto Sans',sans-serif" };
+const headerBtn: React.CSSProperties = { background: 'none', border: 'none', cursor: 'pointer', color: '#fff', fontSize: 18, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6, fontFamily: "'Noto Sans',sans-serif", textTransform: 'capitalize', lineHeight: '28px' };
+const dayName: React.CSSProperties = { fontSize: 14, color: '#6E6E6E', fontWeight: 600, letterSpacing: '-1px', padding: '3px 0', fontFamily: "'Noto Sans',sans-serif" };
 const dayCell: React.CSSProperties = { width: 30, height: 30, margin: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: 14, fontWeight: 500, letterSpacing: '-0.5px', fontFamily: "'Noto Sans',sans-serif" };
 const cellBtn = (sel: boolean, padV = 10): React.CSSProperties => ({
   padding: `${padV}px 4px`, border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 13,

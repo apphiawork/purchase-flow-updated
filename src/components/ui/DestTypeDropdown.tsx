@@ -30,7 +30,7 @@ export default function DestTypeDropdown({ invalid }: { invalid?: boolean }) {
   return (
     <div ref={ref} style={{ position: 'relative', width: '100%' }}>
       <button onClick={() => setOpen((o) => !o)} id="dest-type-btn"
-        style={{ width: '100%', height: 48, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 14px', border: `1px solid ${borderColor}`, borderRadius: 8, background: '#fff', fontFamily: "'Noto Sans',sans-serif", fontSize: 15, color: destination ? '#212121' : '#949494', cursor: 'pointer', textAlign: 'left', boxShadow: open ? '0 0 0 3px rgba(0,94,184,.2)' : 'none', transition: 'border-color .15s' }}>
+        style={{ width: '100%', height: 48, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 14px', border: `1px solid ${borderColor}`, borderRadius: 8, background: '#fff', fontFamily: "'Noto Sans',sans-serif", fontSize: 16, color: destination ? '#212121' : '#949494', cursor: 'pointer', textAlign: 'left', boxShadow: open ? '0 0 0 3px rgba(0,94,184,.2)' : 'none', transition: 'border-color .15s' }}>
         <span>{destination ? DEST_LABELS[destination] : 'Select destination(s)'}</span>
         <ChevronDown style={{ flexShrink: 0, transition: 'transform .2s', transform: open ? 'rotate(180deg)' : undefined }} />
       </button>

@@ -10,7 +10,7 @@ function makeState(over: Partial<PurchaseState> = {}): PurchaseState {
     planCounts: { value: { adult: 0, child: 0 }, plus: { adult: 0, child: 0 }, pro: { adult: 0, child: 0 } },
     addons: {}, addonPax: {}, addonTab: 'recommended', petCount: 0, policyholderSlot: null, addonSlots: [], insuredPersons: [],
     applicant: { name: '', dob: '', nric: '', phone: '', email: '', postal: '', address: '', unit: '' },
-    policyNumber: '', dialog: { open: false, title: '', msg: '' },
+    policyNumber: '', dialog: { open: false, title: '', msg: '' }, toast: { open: false, msg: '' },
   };
   return { ...base, ...over };
 }

@@ -4,6 +4,7 @@ import { PLAN_FEATURES, PLAN_PRICES } from '../../data/plans';
 import { PROMO_RATE } from '../../data/constants';
 import { fmt } from '../../store/selectors';
 import type { PlanKey } from '../../types';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import TopNav from '../layout/TopNav';
 import QuoteBar from '../layout/QuoteBar';
 import Footer from '../layout/Footer';
@@ -18,6 +19,8 @@ const PLANS: { key: PlanKey; name: string; popular?: boolean }[] = [
   { key: 'plus', name: 'Plus', popular: true },
   { key: 'pro', name: 'Pro' },
 ];
+
+const FEATURE_FIELD: Record<PlanKey, 'v' | 'p' | 'pro'> = { value: 'v', plus: 'p', pro: 'pro' };
 
 function PriceRow({ plan, type, label }: { plan: PlanKey; type: 'adult' | 'child'; label: string }) {
   const s = usePurchaseStore();
@@ -40,8 +43,52 @@ function PriceRow({ plan, type, label }: { plan: PlanKey; type: 'adult' | 'child
   );
 }
 
+/** Mobile-only Select Plan layout: segmented plan tabs + a single stacked card + vertical Key Features. */
+function MobilePlanSelector({ onCompare }: { onCompare: () => void }) {
+  const [active, setActive] = useState<PlanKey>('plus');
+  const plan = PLANS.find((p) => p.key === active)!;
+  const vf = FEATURE_FIELD[active];
+
+  return (
+    <>
+      <div className="mplan-tabs">
+        {PLANS.map(({ key, name }) => (
+          <button key={key} className={`mplan-tab ${active === key ? 'active' : ''}`} onClick={() => setActive(key)}>{name}</button>
+        ))}
+      </div>
+
+      <div className="mplan-card">
+        <div className="plan-name">{plan.name}{plan.popular && <span className="badge badge-blue">★ Most Popular</span>}</div>
+        <PriceRow plan={active} type="adult" label="Per Adult" />
+        <PriceRow plan={active} type="child" label="Per Child" />
+      </div>
+
+      <div className="mplan-features">
+        <div className="mplan-features-title">Key Features</div>
+        {PLAN_FEATURES.map((row, i) => {
+          const val = row[vf];
+          if (row.header && !val) return <div className="mplan-feat-header" key={i}>{row.label}</div>;
+          return (
+            <div className={`mplan-feat-row${row.header ? ' bold' : ''}`} key={i}>
+              <span>{row.label}</span><span>{val}</span>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="mplan-foot">
+        <div className="view-comparison" onClick={onCompare} style={{ cursor: 'pointer' }}>
+          View Plan Comparison <ArrowRight />
+        </div>
+        <p style={{ fontSize: 14, color: 'var(--gray-500)' }}>For full summary, please refer to <a href="#" onClick={(e) => e.preventDefault()}>policy wording.</a></p>
+      </div>
+    </>
+  );
+}
+
 export default function Screen2Plan() {
   const s = usePurchaseStore();
+  const isMobile = useIsMobile();
   const [draftOpen, setDraftOpen] = useState(false);
   const [compareOpen, setCompareOpen] = useState(false);
 
@@ -54,6 +101,7 @@ export default function Screen2Plan() {
           <h1 className="page-title">Select Plan</h1>
           <p className="page-subtitle">Choose a plan based on your travel needs and customise with add-ons later.</p>
 
+          {isMobile ? <MobilePlanSelector onCompare={() => setCompareOpen(true)} /> : (
           <div className="plan-table">
             <div className="plan-table-header">
               <div className="plan-col-features">Key Features</div>
@@ -84,6 +132,7 @@ export default function Screen2Plan() {
               <p style={{ fontSize: 14, color: 'var(--gray-500)' }}>For full summary, please refer to <a href="#" onClick={(e) => e.preventDefault()}>policy wording.</a></p>
             </div>
           </div>
+          )}
         </div>
       </div>
 

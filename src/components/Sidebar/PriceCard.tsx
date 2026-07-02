@@ -78,8 +78,8 @@ export default function PriceCard() {
         <div className="price-section-title" style={{ marginTop: 20 }}>Add-On(s) <button className="text-link" style={{ fontSize: 14 }} onClick={() => s.goToScreen(3)}>Edit</button></div>
         <AddonLines />
         <hr className="price-divider" />
-        <div className="price-line"><span className="line-label" style={{ fontWeight: 700, color: '#212121' }}>Subtotal</span><span style={{ fontWeight: 500 }}>{fmt(subtotal)}</span></div>
-        <div className="price-line" style={{ marginTop: 8 }}><span className="line-label" style={{ fontWeight: 700, color: '#212121' }}>Discount Code</span><span className="savings-amt">–{fmt(discount)}</span></div>
+        <div className="price-line"><span className="line-label" style={{ fontWeight: 600, color: '#212121' }}>Subtotal</span><span style={{ fontWeight: 500 }}>{fmt(subtotal)}</span></div>
+        <div className="price-line" style={{ marginTop: 8 }}><span className="line-label" style={{ fontWeight: 600, color: '#212121' }}>Discount Code</span><span className="savings-amt">–{fmt(discount)}</span></div>
         <div className="savings-row" style={{ marginTop: 8 }}>
           <div className="promo-pill">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10.98 5.02a.75.75 0 1 0-1.06 1.06.75.75 0 0 0 1.06-1.06Z" fill="#949494" /><path d="M14.67 1.33 15.21 8.34 7.92 15.62 0.38 8.08 7.66 0.79l7.01.54ZM8.86 4.31a1.99 1.99 0 1 0 2.82 2.82 1.99 1.99 0 0 0-2.82-2.82Z" fill="#949494" /></svg>
@@ -88,7 +88,7 @@ export default function PriceCard() {
           </div>
         </div>
         <hr className="price-divider" />
-        <div className="price-line"><span className="line-label" style={{ fontWeight: 700, color: '#212121', fontSize: 16 }}>Total (incl. GST)</span><span style={{ fontWeight: 700, fontSize: 16, color: '#212121' }}>{fmt(total)}</span></div>
+        <div className="price-line"><span className="line-label" style={{ fontWeight: 600, color: '#212121', fontSize: 16 }}>Total (incl. GST)</span><span style={{ fontWeight: 600, fontSize: 16, color: '#212121' }}>{fmt(total)}</span></div>
       </div>
     </div>
   );

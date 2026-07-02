@@ -78,4 +78,5 @@ export interface PurchaseState {
   policyNumber: string;
 
   dialog: DialogState;
+  toast: { open: boolean; msg: string };
 }

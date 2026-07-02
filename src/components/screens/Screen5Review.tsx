@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { usePurchaseStore } from '../../store/usePurchaseStore';
-import { addonsForSlot, cap, fmt, formatDateDisplay, personAddonLabel } from '../../store/selectors';
+import { addonsForSlot, fmt, formatDateDisplay, personAddonLabel } from '../../store/selectors';
 import { ADDON_PRICE } from '../../data/addons';
 import TopNav from '../layout/TopNav';
 import QuoteBar from '../layout/QuoteBar';
@@ -54,12 +54,12 @@ export default function Screen5Review() {
             </div>
           </div>
 
-          {s.insuredPersons.map((p, i) => {
+          {s.insuredPersons.map((p) => {
             const addons = addonsForSlot(s, p.id).map(personAddonLabel);
             return (
               <div className="review-section" key={p.id}>
                 <div className="review-section-header">
-                  <h3>Insured Person {i + 1} – {p.type === 'adult' ? 'Adult' : 'Child'} ({cap(p.plan)})</h3>
+                  <h3>{p.label}</h3>
                   <button className="text-link" onClick={() => s.goToScreen(4)}>Edit</button>
                 </div>
                 <div className="review-grid">

@@ -40,7 +40,7 @@ export default function CountryMultiSelect() {
   return (
     <div ref={ref} style={{ position: 'relative', width: '100%', minWidth: 0 }}>
       <button onClick={() => setOpen((o) => !o)}
-        style={{ width: '100%', minWidth: 0, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '0 14px', border: `1px solid ${open ? '#005EB8' : 'rgba(0,0,0,.09)'}`, borderRadius: 8, background: '#fff', fontFamily: "'Noto Sans',sans-serif", fontSize: 15, color: hasSel ? '#212121' : '#949494', cursor: 'pointer', textAlign: 'left', boxShadow: open ? '0 0 0 3px rgba(0,94,184,.2)' : 'none', transition: 'border-color .15s' }}>
+        style={{ width: '100%', minWidth: 0, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '0 14px', border: `1px solid ${open ? '#005EB8' : 'rgba(0,0,0,.09)'}`, borderRadius: 8, background: '#fff', fontFamily: "'Noto Sans',sans-serif", fontSize: 16, color: hasSel ? '#212121' : '#949494', cursor: 'pointer', textAlign: 'left', boxShadow: open ? '0 0 0 3px rgba(0,94,184,.2)' : 'none', transition: 'border-color .15s' }}>
         <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
         <ChevronDown style={{ flexShrink: 0, transition: 'transform .2s', transform: open ? 'rotate(180deg)' : undefined }} />
       </button>

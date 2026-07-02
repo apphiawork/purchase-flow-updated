@@ -37,12 +37,15 @@ const initialState: PurchaseState = {
   applicant: emptyApplicant(),
   policyNumber: '',
   dialog: { open: false, title: '', msg: '' },
+  toast: { open: false, msg: '' },
 };
 
 interface Actions {
   goToScreen: (n: number) => void;
   showDialog: (title: string, msg: string) => void;
   closeDialog: () => void;
+  showToast: (msg: string) => void;
+  hideToast: () => void;
 
   setTripType: (t: 'single' | 'annual') => void;
   setDestination: (type: string) => void;
@@ -80,6 +83,8 @@ export const usePurchaseStore = create<PurchaseState & Actions>((set, get) => ({
   goToScreen: (n) => { set({ currentScreen: n }); window.scrollTo(0, 0); },
   showDialog: (title, msg) => set({ dialog: { open: true, title, msg } }),
   closeDialog: () => set((s) => ({ dialog: { ...s.dialog, open: false } })),
+  showToast: (msg) => set({ toast: { open: true, msg } }),
+  hideToast: () => set((s) => ({ toast: { ...s.toast, open: false } })),
 
   setTripType: (tripType) => set((s) => {
     // Single: default back to the "one or more countries" + select-countries field.

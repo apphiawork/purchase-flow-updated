@@ -19,7 +19,7 @@ function PersonAddons({ person }: { person: InsuredPerson }) {
     <div className="ro-addon-section">
       <div className="ro-addon-head">
         <span>Selected Add-On(s)</span>
-        <button className="text-link" onClick={() => s.goToScreen(3)}>Edit</button>
+        <button className="text-link" onClick={() => { s.setAddonTab('recommended'); s.goToScreen(3); }}>Edit</button>
       </div>
       <div className="ro-addon-list">{addons.length ? addons.join(', ') : 'None'}</div>
     </div>
@@ -36,8 +36,8 @@ function InsuredPersonCard({ person, idx }: { person: InsuredPerson; idx: number
     <div className="traveller-section">
       <div className="traveller-section-header" onClick={() => setCollapsed((c) => !c)}>
         <h3>{person.label}</h3>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-          style={{ transform: collapsed ? 'rotate(180deg)' : undefined, transition: 'transform .2s' }}><polyline points="18 15 12 9 6 15" /></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+          style={{ transform: collapsed ? 'rotate(180deg)' : undefined, transition: 'transform .2s' }}><path d="M12 8.5 6 14.5 7.41 15.91 12 11.33 16.59 15.91 18 14.5z" fill="#6E6E6E" /></svg>
       </div>
       {!collapsed && (
       <div className="traveller-section-body">
@@ -83,6 +83,7 @@ export default function Screen4Travellers() {
   const [bannerOpen, setBannerOpen] = useState(true);
   const [draftOpen, setDraftOpen] = useState(false);
   const [noUnit, setNoUnit] = useState(false);
+  const [applicantCollapsed, setApplicantCollapsed] = useState(false);
 
   return (
     <div className="screen active">
@@ -91,7 +92,6 @@ export default function Screen4Travellers() {
       <div className="page-body">
         <div className="page-main">
           <h1 className="page-title">Enter Traveller Details</h1>
-          <p className="page-subtitle">Enter the details for each traveller.</p>
 
           {bannerOpen && (
             <div className="login-banner">
@@ -106,7 +106,16 @@ export default function Screen4Travellers() {
           )}
 
           <div className="applicant-section">
-            <h3>Applicant Details</h3>
+            <div className="applicant-section-header" style={{ marginBottom: applicantCollapsed ? 0 : 16 }} onClick={() => setApplicantCollapsed((c) => !c)}>
+              <h3>Applicant Details</h3>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                style={{ transform: applicantCollapsed ? 'rotate(180deg)' : undefined, transition: 'transform .2s' }}><path d="M12 8.5 6 14.5 7.41 15.91 12 11.33 16.59 15.91 18 14.5z" fill="#6E6E6E" /></svg>
+            </div>
+            {!applicantCollapsed && (<>
+            <button type="button" className="myinfo-btn" onClick={(e) => e.preventDefault()}>
+              <span className="myinfo-main">Retrieve Myinfo</span>
+              <span className="myinfo-sub">with <b>singpass</b></span>
+            </button>
             <div className="form-group-inline">
               <div className="form-group">
                 <label className="form-label"><span className="req">*</span> Full Name as per NRIC/FIN</label>
@@ -158,6 +167,7 @@ export default function Screen4Travellers() {
                 </label>
               </div>
             </div>
+            </>)}
           </div>
 
           {s.insuredPersons.map((person, idx) => <InsuredPersonCard key={person.id} person={person} idx={idx} />)}

@@ -36,13 +36,13 @@ export default function PaymentModal({ open, onClose }: { open: boolean; onClose
 
         {/* Brand row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 24px 14px', borderBottom: '1px solid #E5E7EB' }}>
-          <span style={{ fontSize: 34, fontWeight: 700, color: '#0F7A73', letterSpacing: '-1px' }}>2C2P</span>
-          <span style={{ fontSize: 30, fontWeight: 700, fontStyle: 'italic', color: '#1A1F71', letterSpacing: '-0.5px' }}>VISA</span>
+          <span style={{ fontSize: 34, fontWeight: 600, color: '#0F7A73', letterSpacing: '-1px' }}>2C2P</span>
+          <span style={{ fontSize: 30, fontWeight: 600, fontStyle: 'italic', color: '#1A1F71', letterSpacing: '-0.5px' }}>VISA</span>
         </div>
 
         {/* OTP body */}
         <div style={{ padding: '20px 32px 24px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, color: '#212121', marginBottom: 12 }}>Verify OTP</h2>
+          <h2 style={{ fontSize: 18, fontWeight: 600, color: '#212121', marginBottom: 12 }}>Verify OTP</h2>
           <p style={{ fontSize: 14, color: '#444', lineHeight: 1.5, marginBottom: 20 }}>
             Please enter your OTP in field below which has been sent to your<br />pXXXXXXXXXXXX@XXXX.com
           </p>
@@ -54,7 +54,7 @@ export default function PaymentModal({ open, onClose }: { open: boolean; onClose
             {detailRow('Card Number', '41111111****1111')}
           </div>
 
-          <div style={{ fontSize: 14, fontWeight: 700, color: '#212121', marginBottom: 12 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: '#212121', marginBottom: 12 }}>
             Enter OTP (Test mode OTP Value is 123456) (uCZrOr):
           </div>
           <input type="password" maxLength={6} value={otp} onChange={(e) => setOtp(e.target.value)} autoFocus

@@ -112,7 +112,7 @@ export default function Screen3Addons() {
       <div className="page-body">
         <div className="page-main">
           <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>Select Add-Ons <span className="badge badge-green" style={{ fontSize: 11 }}>NEW</span></h1>
-          <p className="page-subtitle">Supercharge your plan coverage with exclusive add-ons</p>
+          <p className="page-subtitle">Tailor your travel insurance with highly customisable add-ons designed to fit your needs and preferences.</p>
           <div className="ao-tabs">
             {AO_CATEGORIES.map((t) => (
               <button key={t.key} className={`ao-tab ${tab === t.key ? 'active' : ''}`} onClick={() => s.setAddonTab(t.key)}>{t.label}</button>
