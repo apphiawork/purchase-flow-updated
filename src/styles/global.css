@@ -205,7 +205,10 @@ a:hover{text-decoration:underline}
 ══════════════════════════════════════════════════════════ */
 #screen1{background:var(--bg)}
 .s1-header{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between}
-.s1-hero{position:relative;height:420px;overflow:hidden;flex-shrink:0}
+.s1-hero{position:relative;flex-shrink:0}
+/* Fixed-height cropped hero image + gradient panel below it — don't rescale as fields are added (prevents the image toggling up/down) */
+.s1-bg-img{height:360px}
+.s1-bg-panel{top:360px;bottom:0}
 .s1-hero-img{width:100%;height:100%;object-fit:cover;display:block}
 .s1-hero-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(15,30,70,.75) 0%,rgba(15,30,70,.4) 60%,transparent 100%)}
 .s1-hero-content{position:absolute;top:50%;left:120px;transform:translateY(-50%);color:#fff}
@@ -597,6 +600,8 @@ input[type=checkbox]{accent-color:var(--blue-700)}
 
   /* Screen 1 get-quote: tighter padding (16px), smaller heading, full-width toggle + CTA */
   .s1-hero{padding:32px 16px 44px!important}
+  .s1-bg-img{height:300px}
+  .s1-bg-panel{top:300px}
   .s1-card{padding:16px!important;align-items:stretch!important;gap:20px!important}
   .s1-heading{font-size:26px!important}
   .s1-triptoggle{width:100%;align-self:stretch!important}
@@ -635,19 +640,20 @@ input[type=checkbox]{accent-color:var(--blue-700)}
   .qb-pick{color:#F09252;font-weight:500;text-decoration:underline;cursor:pointer}
 
   /* Select Plan mobile: segmented plan tabs + single stacked card + vertical Key Features */
-  .mplan-tabs{display:flex;gap:4px;padding:4px;background:#F5F5F5;border-radius:24px;margin-bottom:20px}
+  .mplan-tabs{display:flex;gap:4px;padding:4px;background:#EDEDED;border-radius:24px;margin-bottom:20px}
   .mplan-tab{flex:1;padding:9px 0;border:none;border-radius:20px;background:none;font-family:'Noto Sans',sans-serif;font-size:14px;font-weight:500;color:#6E6E6E;cursor:pointer;transition:.15s}
-  .mplan-tab.active{background:#fff;color:#005EB8;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .mplan-tab.active{background:linear-gradient(90deg,rgba(51,133,230,.12),rgba(51,133,230,.12)),#fff;color:#005EB8}
+  /* One unified card: plan pricing + Key Features + comparison links, split by dividers (Figma 4658:17398) */
   .mplan-card{background:#fff;border:1px solid var(--gray-200);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.05);padding:20px 16px;margin-bottom:16px}
   .mplan-card .plan-name{justify-content:flex-start;margin-bottom:16px}
   .mplan-card .plan-price-control{flex-direction:row!important;align-items:center;margin-bottom:16px}
-  .mplan-card .plan-price-control:last-child{margin-bottom:0}
-  .mplan-features{background:#fff;border:1px solid var(--gray-200);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.05);padding:20px 16px;margin-bottom:16px}
-  .mplan-features-title{font-size:18px;font-weight:600;color:#212121;margin-bottom:8px}
-  .mplan-feat-header{font-size:14px;font-weight:600;color:#212121;margin-top:20px;margin-bottom:4px}
+  .mplan-div{height:1px;background:rgba(0,0,0,.08);margin:8px 0 16px}
+  .mplan-features-title{font-size:18px;font-weight:600;color:#212121;margin-bottom:4px}
+  .mplan-feat-header{font-size:14px;font-weight:600;color:#212121;margin-top:16px;margin-bottom:4px}
+  .mplan-features-title+.mplan-feat-header{margin-top:8px}
   .mplan-feat-row{display:flex;justify-content:space-between;gap:16px;font-size:14px;color:#6E6E6E;padding:6px 0}
   .mplan-feat-row>span:last-child{text-align:right;white-space:nowrap;color:#212121}
-  .mplan-feat-row.bold{margin-top:20px}
+  .mplan-feat-row.bold{margin-top:16px}
   .mplan-feat-row.bold>span{font-weight:600;color:#212121}
   .mplan-foot{display:flex;flex-direction:column;gap:12px}
 

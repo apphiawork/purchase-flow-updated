@@ -35,7 +35,7 @@ export default function DestTypeDropdown({ invalid }: { invalid?: boolean }) {
         <ChevronDown style={{ flexShrink: 0, transition: 'transform .2s', transform: open ? 'rotate(180deg)' : undefined }} />
       </button>
       {open && (
-        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, background: '#fff', borderRadius: 8, boxShadow: '0 1px 4px rgba(0,0,0,.05)', zIndex: 200, overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, background: '#fff', borderRadius: 8, boxShadow: '0 4px 16px rgba(0,0,0,.12)', zIndex: 200, maxHeight: 320, overflowY: 'auto', overflowX: 'hidden' }}>
           <div style={{ padding: '8px 0' }}>
             {!annual && (
               <>

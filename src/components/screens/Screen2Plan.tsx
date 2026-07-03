@@ -61,9 +61,9 @@ function MobilePlanSelector({ onCompare }: { onCompare: () => void }) {
         <div className="plan-name">{plan.name}{plan.popular && <span className="badge badge-blue">★ Most Popular</span>}</div>
         <PriceRow plan={active} type="adult" label="Per Adult" />
         <PriceRow plan={active} type="child" label="Per Child" />
-      </div>
 
-      <div className="mplan-features">
+        <div className="mplan-div" />
+
         <div className="mplan-features-title">Key Features</div>
         {PLAN_FEATURES.map((row, i) => {
           const val = row[vf];
@@ -74,13 +74,15 @@ function MobilePlanSelector({ onCompare }: { onCompare: () => void }) {
             </div>
           );
         })}
-      </div>
 
-      <div className="mplan-foot">
-        <div className="view-comparison" onClick={onCompare} style={{ cursor: 'pointer' }}>
-          View Plan Comparison <ArrowRight />
+        <div className="mplan-div" />
+
+        <div className="mplan-foot">
+          <div className="view-comparison" onClick={onCompare} style={{ cursor: 'pointer' }}>
+            View Plan Comparison <ArrowRight />
+          </div>
+          <p style={{ fontSize: 14, color: 'var(--gray-500)' }}>For full summary, please refer to <a href="#" onClick={(e) => e.preventDefault()}>policy wording.</a></p>
         </div>
-        <p style={{ fontSize: 14, color: 'var(--gray-500)' }}>For full summary, please refer to <a href="#" onClick={(e) => e.preventDefault()}>policy wording.</a></p>
       </div>
     </>
   );

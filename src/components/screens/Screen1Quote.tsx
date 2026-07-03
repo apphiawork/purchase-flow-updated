@@ -47,9 +47,9 @@ export default function Screen1Quote() {
 
       {/* Hero + form */}
       <div className="s1-hero" style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '52px 24px 64px' }}>
-        {/* Top 50%: hero image. Bottom 50%: soft gradient panel with rounded top. */}
-        <img src="/bg-image.jpg" alt="Travel" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '50%', objectFit: 'cover', objectPosition: 'center', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '50%', background: 'var(--primary-gradient-light)', borderRadius: '12px 12px 0 0', pointerEvents: 'none' }} />
+        {/* Fixed-height cropped hero image; gradient panel fills below it to the bottom. Both use fixed offsets so they don't rescale as form fields appear. */}
+        <img src="/bg-image.jpg" alt="Travel" className="s1-bg-img" style={{ position: 'absolute', top: 0, left: 0, width: '100%', objectFit: 'cover', objectPosition: 'center', pointerEvents: 'none' }} />
+        <div className="s1-bg-panel" style={{ position: 'absolute', left: 0, right: 0, background: 'var(--primary-gradient-light)', borderRadius: '12px 12px 0 0', pointerEvents: 'none' }} />
 
         <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 1000, display: 'flex', flexDirection: 'column', gap: 32 }}>
           {/* Banner */}
@@ -57,8 +57,10 @@ export default function Screen1Quote() {
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'linear-gradient(90deg,#005EB8 0.62%,#5C55EB 100%)', borderRadius: 24, padding: '4px 8px', width: 'fit-content' }}>
               <span style={{ fontSize: 12, fontWeight: 500, color: '#fff', whiteSpace: 'nowrap' }}>🎉 60% off auto-applied! | Promo ends 31 May</span>
             </div>
-            <h1 className="s1-heading" style={{ fontSize: 32, fontWeight: 600, color: '#fff', lineHeight: 1.2, margin: 0 }}>Ready to protect your adventures with UniTravel?</h1>
-            <p style={{ fontSize: 16, fontWeight: 500, color: '#fff', lineHeight: 1.5, margin: 0 }}>Travel with peace of mind with UOI, trusted protection with millions paid in claims.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <h1 className="s1-heading" style={{ fontSize: 32, fontWeight: 600, color: '#fff', lineHeight: 1.2, margin: 0 }}>Ready to protect your adventures with UniTravel?</h1>
+              <p style={{ fontSize: 16, fontWeight: 500, color: '#fff', lineHeight: 1.5, margin: 0 }}>Travel with peace of mind with UOI, trusted protection with millions paid in claims.</p>
+            </div>
           </div>
 
           {/* Form card */}

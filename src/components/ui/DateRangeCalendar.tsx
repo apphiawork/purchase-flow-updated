@@ -46,7 +46,8 @@ export default function DateRangeCalendar({ which, departISO, selectedISO, onSel
   for (let i = 0; i < firstDay; i++) cells.push(<div key={`e${i}`} />);
   for (let day = 1; day <= daysInMonth; day++) {
     const date = new Date(year, month, day); date.setHours(0, 0, 0, 0);
-    const isPast = date < today;
+    // Departure can't be before today; the return date can't be before the chosen departure date.
+    const isPast = date < (depDate ?? today);
     const isSel = !!selected && date.getTime() === selected.getTime();
     const isDepart = !!depDate && date.getTime() === depDate.getTime();
     const hasRange = !!depDate && !!selected && selected > depDate;

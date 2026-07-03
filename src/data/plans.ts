@@ -24,8 +24,8 @@ export const PLAN_FEATURES: FeatureRow[] = [
   F('Trip Cancellation', '', '', '', true),
   F('Adult up to 70 years old', 'S$15,000', 'S$15,000', 'S$15,000'),
   F('Child below 16 years old', 'S$10,000', 'S$10,000', 'S$10,000'),
-  F('Baggage & Personal Effects', 'S$7,500', 'S$7,500', 'S$7,500', true),
   F('Travel Delay', 'S$2,000', 'S$2,000', 'S$2,000', true),
+  F('Baggage & Personal Effects', 'S$7,500', 'S$7,500', 'S$7,500', true),
   F('Covid-19 Cover', 'Covered', 'Covered', 'Covered', true),
 ];
 
