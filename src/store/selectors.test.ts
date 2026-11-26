@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { PurchaseState } from '../types';
 import {
-  addonLines, buildInsuredPersons, hasOptionalAddon, isAseanTrip, maskDateInput, parseDisplayDate, totals,
+  addonLines, buildInsuredPersons, isAseanTrip, planBase, planUnitPrices, maskDateInput, parseDisplayDate, totals,
   tripDurationDays, visiblePlans,
 } from './selectors';
 
@@ -29,16 +29,17 @@ describe('pricing (TRAVEL60 = 60% off the whole subtotal)', () => {
     expect(totals(s)).toEqual({ subtotal: 175, discount: 105, total: 70 });
   });
 
-  it('a Pre-existing Conditions policy includes pre-ex cover at S$30 per traveller', () => {
+  it('a Pre-existing Conditions plan costs 30% more and has no pre-ex add-on', () => {
     const s = makeState({ coverType: 'prex' });
-    expect(addonLines(s)).toEqual([{ key: 'prex', label: 'Pre-existing condition', amount: 120 }]);
-    expect(totals(s)).toEqual({ subtotal: 246, discount: 147.6, total: 98.4 });
-    expect(hasOptionalAddon(s)).toBe(false);
-    expect(totals(makeState({ coverType: 'prex', adults: 1, children: 0 })).total).toBe(28.8);
+    expect(planUnitPrices(s, 'plus')).toEqual({ adult: 54.6, child: 27.3 });
+    expect(addonLines(s)).toEqual([]);
+    // 2 x 54.60 + 2 x 27.30 = 163.80, less 60%
+    expect(totals(s)).toEqual({ subtotal: 163.8, discount: 98.28, total: 65.52 });
+    expect(totals(makeState({ coverType: 'prex', adults: 1, children: 0 })).total).toBe(21.84);
   });
 
-  it('pre-ex is not available on annual trips, even if chosen before switching', () => {
-    expect(addonLines(makeState({ tripType: 'annual', coverType: 'prex' }))).toEqual([]);
+  it('annual trips are always priced as Standard', () => {
+    expect(planBase(makeState({ tripType: 'annual', coverType: 'prex' }), 'plus')).toBe(126);
   });
 });
 

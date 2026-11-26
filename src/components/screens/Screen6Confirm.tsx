@@ -1,5 +1,6 @@
 import { usePurchaseStore } from '../../store/usePurchaseStore';
-import { addonLines, addonsShown, getDestinationLabel, planLabel, travellersLabel, tripDatesLabel, tripTypeLabel } from '../../store/selectors';
+import { ADDONS } from '../../data/addons';
+import { addonLines, getDestinationLabel, planLabel, travellersLabel, tripDatesLabel, tripTypeLabel } from '../../store/selectors';
 import SiteHeader from '../flow/SiteHeader';
 import Footer from '../layout/Footer';
 
@@ -8,7 +9,7 @@ export default function Screen6Confirm() {
   const s = usePurchaseStore();
   // Add-on names without counts, as in Figma ("Cancel for any reason, Golf play, Rental vehicle")
   const chosen = new Set(addonLines(s).map((l) => l.key));
-  const addons = addonsShown(s).filter((a) => chosen.has(a.key)).map((a) => a.name).join(', ');
+  const addons = ADDONS.filter((a) => chosen.has(a.key)).map((a) => a.name).join(', ');
   const rows: [string, string][] = [
     ['Certificate no.', s.policyNumber], ['Destination(s)', getDestinationLabel(s)],
     ['Trip type', tripTypeLabel(s)], ['Travel dates', tripDatesLabel(s)],

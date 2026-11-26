@@ -81,7 +81,7 @@
 
 /* ── RESET ────────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:15px;scrollbar-gutter:stable}
+html{font-size:15px}
 body{font-family:'Noto Sans',sans-serif;background:var(--bg);color:var(--text-primary);min-height:100vh;display:flex;flex-direction:column}
 input,select,textarea,button{font-family:inherit;font-size:inherit}
 /* Placeholder / pre-fill hint text uses color-text-tertiary across all screens. */
@@ -579,9 +579,6 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 input[type=checkbox]{accent-color:var(--blue-700)}
 
 /* Scroll */
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--gray-300);border-radius:3px}
 
 @media(max-width:900px){
   .page-body{flex-direction:column;padding:20px}

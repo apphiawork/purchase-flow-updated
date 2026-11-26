@@ -10,6 +10,8 @@ import DestTypeDropdown from '../ui/DestTypeDropdown';
 import CountryMultiSelect from '../ui/CountryMultiSelect';
 import DateRangeCalendar from '../ui/DateRangeCalendar';
 import Stepper from '../ui/Stepper';
+import FDialog from '../flow/FDialog';
+import { PREX_CONDITIONS } from '../../data/addons';
 
 const todayISO = () => {
   const d = new Date();
@@ -42,6 +44,17 @@ function TripDate({ which, label }: { which: 'depart' | 'return'; label: string 
     window.addEventListener('uf:open-return', h);
     return () => window.removeEventListener('uf:open-return', h);
   }, [which, annualReturn]);
+  // Keep the whole calendar on screen: scroll it into view when it opens near the bottom of the window.
+  useEffect(() => {
+    if (!open) return;
+    const t = window.setTimeout(() => {
+      const cal = ref.current?.querySelector<HTMLElement>('[data-calendar]');
+      if (!cal) return;
+      const gap = cal.getBoundingClientRect().bottom + 16 - window.innerHeight;
+      if (gap > 0) window.scrollBy({ top: gap, behavior: 'smooth' });
+    }, 0);
+    return () => window.clearTimeout(t);
+  }, [open, ref]);
   const pick = (v: string) => {
     set(v); setOpen(false);
     if (which === 'depart' && s.tripType === 'single' && !s.returnDate) setTimeout(() => window.dispatchEvent(new Event('uf:open-return')), 0);
@@ -63,6 +76,7 @@ export default function Screen1Quote() {
   const single = s.tripType === 'single';
   const ready = tripDetailsComplete(s);
   const coverRef = useRef<HTMLElement>(null);
+  const [conditionsOpen, setConditionsOpen] = useState(false);
   const wasReady = useRef(ready);
   const days = tripDurationDays(s);
 
@@ -134,7 +148,7 @@ export default function Screen1Quote() {
               </div>
               <p className="f-hint">
                 {prexAvailable(s)
-                  ? <>Standard and Pre-existing Conditions are separate plans. If you need both, buy each one separately. View list of conditions <a href="https://www.uoi.com.sg/" target="_blank" rel="noreferrer" className="f-link">here</a>.</>
+                  ? <>Standard and Pre-existing Conditions are separate plans. If you need both, buy each one separately. View list of conditions <button type="button" className="f-link" onClick={() => setConditionsOpen(true)}>here</button>.</>
                   : 'Pre-existing Conditions cover is only available for Single Trip policies'}
               </p>
             </div>
@@ -159,6 +173,13 @@ export default function Screen1Quote() {
       </div>
       <div style={{ flex: 1 }} />
       <Footer />
+      {/* Same dialog pattern as "View coverage details" on Add-Ons */}
+      <FDialog open={conditionsOpen} onClose={() => setConditionsOpen(false)} title="Pre-existing conditions we cover"
+        footer={<button type="button" className="f-btn f-btn-primary" onClick={() => setConditionsOpen(false)}>OK</button>}>
+        <p style={{ margin: 0 }}>{PREX_CONDITIONS.intro}</p>
+        <ul>{PREX_CONDITIONS.items.map((i) => <li key={i}>{i}</li>)}</ul>
+        <p style={{ margin: '12px 0 0' }}>{PREX_CONDITIONS.note}</p>
+      </FDialog>
     </div>
   );
 }

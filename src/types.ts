@@ -2,7 +2,7 @@ export type PlanKey = 'lite' | 'value' | 'plus' | 'pro';
 export type CoverType = 'standard' | 'prex';
 /** Policy-level add-ons switched on/off; rental and pet are counters. Pre-ex is fixed by the cover type. */
 export type ToggleAddonKey = 'cfar' | 'ski' | 'adv' | 'golf';
-export type AddonKey = ToggleAddonKey | 'rental' | 'pet' | 'prex';
+export type AddonKey = ToggleAddonKey | 'rental' | 'pet';
 
 export interface Addon {
   key: AddonKey;
@@ -10,7 +10,7 @@ export interface Addon {
   desc: string;
   /** Base (pre-discount) price. Per vehicle / per pet for counters, per traveller for pre-ex. */
   price: number;
-  unit: 'policy' | 'vehicle' | 'pet' | 'traveller';
+  unit: 'policy' | 'vehicle' | 'pet';
 }
 
 /** An insured person on Traveller Details: adults first, then children. */

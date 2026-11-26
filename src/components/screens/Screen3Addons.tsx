@@ -1,18 +1,14 @@
 import { useState } from 'react';
 import type { Addon, AddonKey, ToggleAddonKey } from '../../types';
 import { usePurchaseStore } from '../../store/usePurchaseStore';
-import { addonCardPrice, addonSelected, addonsShown, fmt, hasOptionalAddon } from '../../store/selectors';
-import { AO_ICONS } from '../../data/addons';
+import { addonSelected, fmt, hasOptionalAddon } from '../../store/selectors';
+import { ADDONS, AO_ICONS } from '../../data/addons';
 import SiteHeader from '../flow/SiteHeader';
 import SummaryCard from '../flow/SummaryCard';
 import Footer from '../layout/Footer';
 import Toggle from '../ui/Toggle';
 import Stepper from '../ui/Stepper';
 import CoverageModal from '../modals/CoverageModal';
-
-const LockIcon = () => (
-  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 7V5a4 4 0 1 1 8 0v2h.5A1.5 1.5 0 0 1 14 8.5v5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5v-5A1.5 1.5 0 0 1 3.5 7H4Zm1.5 0h5V5a2.5 2.5 0 0 0-5 0v2Z" /></svg>
-);
 
 function AddonCard({ ao, onCoverage }: { ao: Addon; onCoverage: (k: AddonKey) => void }) {
   const s = usePurchaseStore();
@@ -27,9 +23,8 @@ function AddonCard({ ao, onCoverage }: { ao: Addon; onCoverage: (k: AddonKey) =>
       <p>{ao.desc}</p>
       <button type="button" className="f-link f-link-sm" style={{ alignSelf: 'flex-start' }} onClick={() => onCoverage(ao.key)}>View coverage details</button>
       <div className="f-ao-foot">
-        <div className="f-ao-price">{fmt(addonCardPrice(s, ao))}{per && <span>{per}</span>}</div>
-        {ao.key === 'prex' ? <span className="f-included"><LockIcon /> Included</span>
-          : counter ? <Stepper value={s[counter]} minusDisabled={s[counter] <= 0} plusDisabled={s[counter] >= 20}
+        <div className="f-ao-price">{fmt(ao.price)}{per && <span>{per}</span>}</div>
+        {counter ? <Stepper value={s[counter]} minusDisabled={s[counter] <= 0} plusDisabled={s[counter] >= 20}
               onMinus={() => s.adjustCounter(counter, -1)} onPlus={() => s.adjustCounter(counter, 1)} />
           : <Toggle checked={addonSelected(s, ao.key)} onChange={() => s.toggleAddon(ao.key as ToggleAddonKey)} />}
       </div>
@@ -37,8 +32,8 @@ function AddonCard({ ao, onCoverage }: { ao: Addon; onCoverage: (k: AddonKey) =>
   );
 }
 
-/** Select Add-Ons (Figma 7286:41002 / 7318:48738; pre-ex 7358:29762). Every add-on covers the whole policy.
- *  On a Pre-existing Conditions policy, pre-ex cover is listed first, included and locked. */
+/** Select Add-Ons (Figma 7286:41002 / 7318:48738). Every add-on covers the whole policy, on Standard and
+ *  Pre-existing Conditions policies alike. */
 export default function Screen3Addons() {
   const s = usePurchaseStore();
   const [coverage, setCoverage] = useState<AddonKey | null>(null);
@@ -52,7 +47,7 @@ export default function Screen3Addons() {
             <p className="f-sub">Tailor your travel insurance with add-ons designed to fit your needs and preferences</p>
           </div>
           <div className="f-ao-grid">
-            {addonsShown(s).map((ao) => <AddonCard ao={ao} key={ao.key} onCoverage={setCoverage} />)}
+            {ADDONS.map((ao) => <AddonCard ao={ao} key={ao.key} onCoverage={setCoverage} />)}
           </div>
           <div className="f-actions">
             <button type="button" className="f-btn f-btn-back" onClick={() => s.goToScreen(2)}>Back</button>

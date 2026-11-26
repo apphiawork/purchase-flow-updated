@@ -1,8 +1,8 @@
-import type { Addon, AddonKey, InsuredPerson, PlanKey, PurchaseState } from '../types';
+import type { AddonKey, InsuredPerson, PlanKey, PurchaseState } from '../types';
 import { ADDONS } from '../data/addons';
 import { PLAN_META, PLAN_PRICES } from '../data/plans';
 import { ASEAN_COUNTRIES, DEST_TYPE_LABELS } from '../data/countries';
-import { PROMO_RATE } from '../data/constants';
+import { PREX_LOADING, PROMO_RATE } from '../data/constants';
 
 export const PLANS: PlanKey[] = ['lite', 'value', 'plus', 'pro'];
 
@@ -36,20 +36,20 @@ export function tripDetailsComplete(s: PurchaseState): boolean {
 }
 
 // ── Pricing (base = before TRAVEL60) ──
-export function planBase(s: Pick<PurchaseState, 'adults' | 'children'>, plan: PlanKey): number {
-  return round2(s.adults * PLAN_PRICES[plan].adult + s.children * PLAN_PRICES[plan].child);
+type PricingInput = Pick<PurchaseState, 'adults' | 'children' | 'tripType' | 'coverType'>;
+
+/** Per-traveller prices before TRAVEL60. Pre-existing Conditions plans cost 30% more than Standard. */
+export function planUnitPrices(s: Pick<PurchaseState, 'tripType' | 'coverType'>, plan: PlanKey) {
+  const k = isPrexPolicy(s) ? 1 + PREX_LOADING : 1;
+  return { adult: round2(PLAN_PRICES[plan].adult * k), child: round2(PLAN_PRICES[plan].child * k) };
 }
 
-/** Add-ons on the Add-Ons page for this policy (pre-ex only on a Pre-existing Conditions policy, listed first). */
-export const addonsShown = (s: PurchaseState): Addon[] => ADDONS.filter((ao) => ao.key !== 'prex' || isPrexPolicy(s));
-
-/** Price shown on an add-on card. Pre-ex is per traveller on the policy. */
-export function addonCardPrice(s: PurchaseState, ao: Addon): number {
-  return ao.unit === 'traveller' ? ao.price * travellerCount(s) : ao.price;
+export function planBase(s: PricingInput, plan: PlanKey): number {
+  const p = planUnitPrices(s, plan);
+  return round2(s.adults * p.adult + s.children * p.child);
 }
 
 export function addonSelected(s: PurchaseState, key: AddonKey): boolean {
-  if (key === 'prex') return isPrexPolicy(s);
   if (key === 'rental') return s.rentalCount > 0;
   if (key === 'pet') return s.petCount > 0;
   return !!s.addons[key];
@@ -57,15 +57,15 @@ export function addonSelected(s: PurchaseState, key: AddonKey): boolean {
 
 /** Selected add-ons with their base amounts, in display order. */
 export function addonLines(s: PurchaseState): { key: AddonKey; label: string; amount: number }[] {
-  return addonsShown(s).filter((ao) => addonSelected(s, ao.key)).map((ao) => {
+  return ADDONS.filter((ao) => addonSelected(s, ao.key)).map((ao) => {
     if (ao.unit === 'vehicle') return { key: ao.key, label: `${ao.name} (x${s.rentalCount})`, amount: ao.price * s.rentalCount };
     if (ao.unit === 'pet') return { key: ao.key, label: `${ao.name} (x${s.petCount})`, amount: ao.price * s.petCount };
-    return { key: ao.key, label: ao.name, amount: addonCardPrice(s, ao) };
+    return { key: ao.key, label: ao.name, amount: ao.price };
   });
 }
 
-/** Any add-on the customer chose themselves (pre-ex is included, not chosen). Drives Skip vs Next. */
-export const hasOptionalAddon = (s: PurchaseState) => addonLines(s).some((l) => l.key !== 'prex');
+/** Any add-on chosen. Drives Skip vs Next. */
+export const hasOptionalAddon = (s: PurchaseState) => addonLines(s).length > 0;
 
 /** TRAVEL60 takes 60% off the whole subtotal (plan + add-ons). */
 export function totals(s: PurchaseState) {

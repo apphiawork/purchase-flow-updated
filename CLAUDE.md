@@ -32,12 +32,13 @@ Screens: 1 Get a Quote → 0 loading → 2 Select Plan → 3 Select Add-Ons → 
 - Travellers (adults ≥ 1, children, max 20 in total) are chosen on the landing page, and there is a single plan for the whole policy.
 - Pre-existing Conditions cover is **single trip only** (`prexAvailable`). Switching to annual resets cover to Standard.
 - **Lite** is only offered for ASEAN single trips on Standard cover (`visiblePlans`). Plus is the default plan.
-- On a Pre-existing Conditions policy the pre-ex add-on is listed first, included and locked, at S$30 per traveller.
+- Pre-existing Conditions plans cost **30% more** than Standard (`PREX_LOADING`, applied in `planUnitPrices`). There is no pre-ex add-on: it never appears on Add-Ons or in the summary.
 - Every add-on is policy-level (no per-traveller selection). Rental vehicle and pet care are counters; the rest are toggles.
 - **TRAVEL60 takes 60% off the whole subtotal** (plan + add-ons), always applied.
+- The UOI logo returns to Get Quote (from Confirmation it starts a fresh quote).
 - Browser Back/Forward move between screens (`src/hooks/useBrowserHistory.ts`). The loading screen gets no history entry; Back from the confirmation page starts a fresh quote.
 - `insuredPersons` is rebuilt in `goToTravellers` via `buildInsuredPersons`, keeping entered details by id (`adult-0`, `child-1`). "I am the policyholder" copies the applicant's name, DOB and NRIC into one adult.
-- Singpass is a mock: `SingpassFlow` shows the login image (`public/singpass-login.jpg`) with hotspots, then the consent screen; "I Agree" fills and locks the applicant form with a demo profile.
+- Singpass is a mock: `SingpassFlow` shows the login image (`public/singpass-login.jpg`; tapping anywhere logs in), then the consent screen; "I Agree" fills and locks the applicant form with a demo profile.
 
 ### Conventions
 

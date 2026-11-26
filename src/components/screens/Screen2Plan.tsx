@@ -1,12 +1,16 @@
 import { useState } from 'react';
 import { usePurchaseStore } from '../../store/usePurchaseStore';
-import { fmt, planBase, visiblePlans } from '../../store/selectors';
-import { KEY_BENEFITS, PLAN_META, PLAN_PRICES } from '../../data/plans';
+import { fmt, planBase, planUnitPrices, visiblePlans } from '../../store/selectors';
+import { KEY_BENEFITS, PLAN_META } from '../../data/plans';
 import { POLICY_WORDING_URL, PROMO_RATE } from '../../data/constants';
 import SiteHeader from '../flow/SiteHeader';
 import Footer from '../layout/Footer';
 import PlanCompareModal from '../modals/PlanCompareModal';
 import { ArrowRight } from '../icons';
+
+const StarIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1l1.47 3.06 3.36.43-2.46 2.33.62 3.33L6 8.55 3.01 10.15l.62-3.33L1.17 4.49l3.36-.43z" fill="#fff" /></svg>
+);
 
 const disc = (n: number) => n * (1 - PROMO_RATE);
 
@@ -16,7 +20,8 @@ export default function Screen2Plan() {
   const s = usePurchaseStore();
   const [compareOpen, setCompareOpen] = useState(false);
   const plans = PLAN_META.filter((p) => visiblePlans(s).includes(p.key));
-  const cols = { gridTemplateColumns: `minmax(160px,1.1fr) repeat(${plans.length}, minmax(150px,1fr))` };
+  // Figma: 240px benefit column, 220px plan columns (scaled to fit)
+  const cols = { gridTemplateColumns: `minmax(170px,240fr) repeat(${plans.length}, minmax(160px,220fr))` };
 
   return (
     <div className="f-screen">
@@ -30,23 +35,28 @@ export default function Screen2Plan() {
         <div className="f-plans" style={cols}>
           <div className="f-ph first">Key benefit(s)</div>
           {plans.map((p) => {
-            const sel = s.plan === p.key, base = planBase(s, p.key);
+            const sel = s.plan === p.key, base = planBase(s, p.key), prices = planUnitPrices(s, p.key);
             return (
               <div className={`f-ph ${sel ? 'sel' : ''}`} key={p.key}>
-                <div className="f-pname">{p.name}{p.popular && <span className="f-popular">★ Most popular</span>}{p.note && <span className="f-pnote">{p.note}</span>}</div>
-                <div>
-                  <div className="f-pprice">{fmt(disc(base))}</div>
-                  <div className="f-pwas"><s>{fmt(base)}</s><span className="f-off">–60%</span></div>
+                <div className="f-pinfo">
+                  <div className="f-pname">{p.name}{p.popular && <span className="f-popular"><StarIcon /> Most popular</span>}{p.note && <span className="f-pnote">{p.note}</span>}</div>
+                  <div className="f-pprices">
+                    <div className="f-pprice">{fmt(disc(base))}</div>
+                    <div className="f-pwas"><s>{fmt(base)}</s><span className="f-off">–60%</span></div>
+                  </div>
+                  <div className="f-pper"><span>{fmt(disc(prices.adult))} per adult</span><span>{fmt(disc(prices.child))} per child</span></div>
                 </div>
-                <div className="f-pper">{fmt(disc(PLAN_PRICES[p.key].adult))} per adult<br />{fmt(disc(PLAN_PRICES[p.key].child))} per child</div>
                 <button type="button" className={`f-btn ${sel ? 'f-btn-primary' : 'f-btn-outline'}`} aria-pressed={sel} onClick={() => s.selectPlan(p.key)}>{sel ? 'Selected' : 'Select'}</button>
               </div>
             );
           })}
-          {KEY_BENEFITS.map((b) => [
-            <div className="f-pb" key={b.title}><strong>{b.title}</strong><span>{b.desc}</span></div>,
-            ...plans.map((p) => <div className={`f-pv ${s.plan === p.key ? 'sel' : ''}`} key={b.title + p.key}>{b.values[p.key]}</div>),
-          ])}
+          {KEY_BENEFITS.map((b, i) => {
+            const edge = i === 0 ? ' top' : i === KEY_BENEFITS.length - 1 ? ' bottom' : '';
+            return [
+              <div className={`f-pb${edge}`} key={b.title}><strong>{b.title}</strong><span>{b.desc}</span></div>,
+              ...plans.map((p) => <div className={`f-pv${edge}${s.plan === p.key ? ' sel' : ''}`} key={b.title + p.key}>{b.values[p.key]}</div>),
+            ];
+          })}
         </div>
 
         <div className="f-more">

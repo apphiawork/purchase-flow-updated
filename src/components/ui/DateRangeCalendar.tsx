@@ -75,7 +75,7 @@ export default function DateRangeCalendar({ which, departISO, selectedISO, onSel
   for (let y = now.getFullYear(); y <= now.getFullYear() + 11; y++) years.push(y);
 
   return (
-    <div style={popover} onMouseDown={(e) => e.stopPropagation()}>
+    <div style={popover} data-calendar onMouseDown={(e) => e.stopPropagation()}>
       <div style={header}>
         <button onClick={() => nav(-1)} style={navBtn}>‹</button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
