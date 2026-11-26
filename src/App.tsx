@@ -8,6 +8,7 @@ import Screen5Review from './components/screens/Screen5Review';
 import Screen6Confirm from './components/screens/Screen6Confirm';
 import Dialog from './components/ui/Dialog';
 import Toast from './components/ui/Toast';
+import FloatingScrollbar from './components/ui/FloatingScrollbar';
 import { useBrowserHistory } from './hooks/useBrowserHistory';
 
 export default function App() {
@@ -29,6 +30,7 @@ export default function App() {
       {screen}
       <Dialog />
       <Toast />
+      <FloatingScrollbar />
     </>
   );
 }

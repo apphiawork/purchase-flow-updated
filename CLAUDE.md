@@ -47,4 +47,5 @@ Screens: 1 Get a Quote → 0 loading → 2 Select Plan → 3 Select Add-Ons → 
 - Constant tables are in `src/data/` (`plans.ts`, `addons.ts`, `comparison.ts`, `countries.ts`, `constants.ts`). Edit data there, not in components.
 - Layout follows Figma: nav, banner, page content and footer all centre a container of max 1120px (`.f-wrap`, 32px side padding, 16px on phones). The footer is full-bleed blue with its text aligned to that container.
 - Type scale (Figma): page title 32/600, panel titles 20/600, landing card titles 18/600, body 16, labels 14, captions 12.
+- The page's own scrollbar is hidden; `FloatingScrollbar` draws one that floats over the content so the layout never shifts when a page becomes scrollable. Inner scroll areas keep slim native scrollbars.
 - Brand copy rules: never use ALL CAPS (no `text-transform: uppercase`), and no full stop at the end of copy that is a single one-line sentence.
