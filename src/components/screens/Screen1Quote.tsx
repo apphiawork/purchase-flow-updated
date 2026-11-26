@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { usePurchaseStore } from '../../store/usePurchaseStore';
 import { dayLabel, prexAvailable, tripDetailsComplete, tripDurationDays } from '../../store/selectors';
 import { MAX_TRAVELLERS } from '../../data/constants';
@@ -44,16 +44,22 @@ function TripDate({ which, label }: { which: 'depart' | 'return'; label: string 
     window.addEventListener('uf:open-return', h);
     return () => window.removeEventListener('uf:open-return', h);
   }, [which, annualReturn]);
-  // Keep the whole calendar on screen: scroll it into view when it opens near the bottom of the window.
-  useEffect(() => {
+  // The calendar overlays the page, so stretch the page content to fit it: the footer moves down below the
+  // calendar and the page grows naturally (no auto-scroll, nothing above it moves). Undone when it closes.
+  useLayoutEffect(() => {
     if (!open) return;
-    const t = window.setTimeout(() => {
-      const cal = ref.current?.querySelector<HTMLElement>('[data-calendar]');
-      if (!cal) return;
-      const gap = cal.getBoundingClientRect().bottom + 16 - window.innerHeight;
-      if (gap > 0) window.scrollBy({ top: gap, behavior: 'smooth' });
-    }, 0);
-    return () => window.clearTimeout(t);
+    const cal = ref.current?.querySelector<HTMLElement>('[data-calendar]');
+    const stack = ref.current?.closest<HTMLElement>('.f-stack');
+    if (!cal || !stack) return;
+    const fit = () => {
+      stack.style.minHeight = '';
+      const need = cal.getBoundingClientRect().bottom + 24 - stack.getBoundingClientRect().top;
+      if (need > stack.offsetHeight) stack.style.minHeight = `${Math.ceil(need)}px`;
+    };
+    fit();
+    const ro = new ResizeObserver(fit); // month ↔ year views change the calendar's height
+    ro.observe(cal);
+    return () => { ro.disconnect(); stack.style.minHeight = ''; };
   }, [open, ref]);
   const pick = (v: string) => {
     set(v); setOpen(false);
