@@ -15,7 +15,7 @@ function AddonCard({ ao, onCoverage }: { ao: Addon; onCoverage: (k: AddonKey) =>
   const counter = ao.unit === 'vehicle' ? 'rentalCount' : ao.unit === 'pet' ? 'petCount' : null;
   const per = ao.unit === 'vehicle' ? 'per vehicle' : ao.unit === 'pet' ? 'per pet' : '';
   return (
-    <div className="f-ao">
+    <div className={`f-ao${addonSelected(s, ao.key) ? ' sel' : ''}`}>
       <div className="f-ao-head">
         <span className="f-ao-icon" dangerouslySetInnerHTML={{ __html: AO_ICONS[ao.key] }} />
         <h3>{ao.name}</h3>

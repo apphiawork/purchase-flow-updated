@@ -50,6 +50,9 @@ export default function Screen2Plan() {
               </div>
             );
           })}
+          {/* Selected plan (option B): one rounded blue outline drawn over the whole column, white fill */}
+          <div className="f-psel" aria-hidden="true"
+            style={{ gridColumn: `${plans.findIndex((p) => p.key === s.plan) + 2} / span 1` }} />
           {KEY_BENEFITS.map((b, i) => {
             const edge = i === 0 ? ' top' : i === KEY_BENEFITS.length - 1 ? ' bottom' : '';
             return [
