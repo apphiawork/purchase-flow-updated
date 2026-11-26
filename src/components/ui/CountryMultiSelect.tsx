@@ -4,7 +4,7 @@ import { useOutsideClick } from '../../hooks/useOutsideClick';
 import { ALL_COUNTRIES, POPULAR_COUNTRIES } from '../../data/countries';
 import { ChevronDown } from '../icons';
 
-const sectionLabel: React.CSSProperties = { padding: '6px 12px 4px', fontSize: 11, color: '#949494', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.5px' };
+const sectionLabel: React.CSSProperties = { padding: '6px 12px 4px', fontSize: 11, color: '#949494', fontWeight: 500 };
 
 export default function CountryMultiSelect() {
   const { selectedCountries, setSelectedCountries } = usePurchaseStore();
@@ -14,7 +14,8 @@ export default function CountryMultiSelect() {
 
   const q = query.toLowerCase();
   const popular = useMemo(() => POPULAR_COUNTRIES.filter((c) => !q || c.toLowerCase().includes(q)), [q]);
-  const all = useMemo(() => ALL_COUNTRIES.filter((c) => !POPULAR_COUNTRIES.includes(c) && (!q || c.toLowerCase().includes(q))), [q]);
+  // While searching, show every match (popular ones included) in one A–Z list.
+  const all = useMemo(() => ALL_COUNTRIES.filter((c) => (q ? c.toLowerCase().includes(q) : !POPULAR_COUNTRIES.includes(c))), [q]);
 
   const toggle = (c: string) => {
     const i = selectedCountries.indexOf(c);

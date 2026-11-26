@@ -1,149 +1,66 @@
 import { useState } from 'react';
 import { usePurchaseStore } from '../../store/usePurchaseStore';
-import { PLAN_FEATURES, PLAN_PRICES } from '../../data/plans';
-import { PROMO_RATE } from '../../data/constants';
-import { fmt } from '../../store/selectors';
-import type { PlanKey } from '../../types';
-import { useIsMobile } from '../../hooks/useIsMobile';
-import TopNav from '../layout/TopNav';
-import QuoteBar from '../layout/QuoteBar';
+import { fmt, planBase, visiblePlans } from '../../store/selectors';
+import { KEY_BENEFITS, PLAN_META, PLAN_PRICES } from '../../data/plans';
+import { POLICY_WORDING_URL, PROMO_RATE } from '../../data/constants';
+import SiteHeader from '../flow/SiteHeader';
 import Footer from '../layout/Footer';
-import ActionBar from '../layout/ActionBar';
-import Stepper from '../ui/Stepper';
-import SaveDraftModal from '../modals/SaveDraftModal';
 import PlanCompareModal from '../modals/PlanCompareModal';
 import { ArrowRight } from '../icons';
 
-const PLANS: { key: PlanKey; name: string; popular?: boolean }[] = [
-  { key: 'value', name: 'Value' },
-  { key: 'plus', name: 'Plus', popular: true },
-  { key: 'pro', name: 'Pro' },
-];
+const disc = (n: number) => n * (1 - PROMO_RATE);
 
-const FEATURE_FIELD: Record<PlanKey, 'v' | 'p' | 'pro'> = { value: 'v', plus: 'p', pro: 'pro' };
-
-function PriceRow({ plan, type, label }: { plan: PlanKey; type: 'adult' | 'child'; label: string }) {
-  const s = usePurchaseStore();
-  const count = s.planCounts[plan][type];
-  return (
-    <div className="plan-price-control">
-      <div>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-          <span className="price">{fmt(PLAN_PRICES[plan][type] * (1 - PROMO_RATE))}</span>
-          <span className="per-label">{label}</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
-          <span className="original">{fmt(PLAN_PRICES[plan][type])}</span>
-          <span className="discount">–60%</span>
-        </div>
-      </div>
-      <Stepper value={count} minusDisabled={count === 0}
-        onMinus={() => s.adjustCount(plan, type, -1)} onPlus={() => s.adjustCount(plan, type, 1)} />
-    </div>
-  );
-}
-
-/** Mobile-only Select Plan layout: segmented plan tabs + a single stacked card + vertical Key Features. */
-function MobilePlanSelector({ onCompare }: { onCompare: () => void }) {
-  const [active, setActive] = useState<PlanKey>('plus');
-  const plan = PLANS.find((p) => p.key === active)!;
-  const vf = FEATURE_FIELD[active];
-
-  return (
-    <>
-      <div className="mplan-tabs">
-        {PLANS.map(({ key, name }) => (
-          <button key={key} className={`mplan-tab ${active === key ? 'active' : ''}`} onClick={() => setActive(key)}>{name}</button>
-        ))}
-      </div>
-
-      <div className="mplan-card">
-        <div className="plan-name">{plan.name}{plan.popular && <span className="badge badge-blue">★ Most Popular</span>}</div>
-        <PriceRow plan={active} type="adult" label="Per Adult" />
-        <PriceRow plan={active} type="child" label="Per Child" />
-
-        <div className="mplan-div" />
-
-        <div className="mplan-features-title">Key Features</div>
-        {PLAN_FEATURES.map((row, i) => {
-          const val = row[vf];
-          if (row.header && !val) return <div className="mplan-feat-header" key={i}>{row.label}</div>;
-          return (
-            <div className={`mplan-feat-row${row.header ? ' bold' : ''}`} key={i}>
-              <span>{row.label}</span><span>{val}</span>
-            </div>
-          );
-        })}
-
-        <div className="mplan-div" />
-
-        <div className="mplan-foot">
-          <div className="view-comparison" onClick={onCompare} style={{ cursor: 'pointer' }}>
-            View Plan Comparison <ArrowRight />
-          </div>
-          <p style={{ fontSize: 14, color: 'var(--gray-500)' }}>For full summary, please refer to <a href="#" onClick={(e) => e.preventDefault()}>policy wording.</a></p>
-        </div>
-      </div>
-    </>
-  );
-}
-
+/** Select Plan (Figma 7272:31893). Prices are for the travellers chosen on Get Quote; Plus is preselected.
+ *  Lite only shows for ASEAN single trips on Standard cover. */
 export default function Screen2Plan() {
   const s = usePurchaseStore();
-  const isMobile = useIsMobile();
-  const [draftOpen, setDraftOpen] = useState(false);
   const [compareOpen, setCompareOpen] = useState(false);
+  const plans = PLAN_META.filter((p) => visiblePlans(s).includes(p.key));
+  const cols = { gridTemplateColumns: `minmax(160px,1.1fr) repeat(${plans.length}, minmax(150px,1fr))` };
 
   return (
-    <div className="screen active">
-      <TopNav stepNum={1} />
-      <QuoteBar showTotal />
-      <div className="page-body">
-        <div className="page-main">
-          <h1 className="page-title">Select Plan</h1>
-          <p className="page-subtitle">Choose a plan based on your travel needs and customise with add-ons later.</p>
+    <div className="f-screen">
+      <SiteHeader step={1} />
+      <div className="f-wrap" style={{ paddingBlock: '32px 0', display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div>
+          <h1 className="f-title">Select Plan</h1>
+          <p className="f-sub">Choose a travel insurance plan based on the level of cover you need, then customise it with add-ons</p>
+        </div>
 
-          {isMobile ? <MobilePlanSelector onCompare={() => setCompareOpen(true)} /> : (
-          <div className="plan-table">
-            <div className="plan-table-header">
-              <div className="plan-col-features">Key Features</div>
-              {PLANS.map(({ key, name, popular }) => (
-                <div className={`plan-col${popular ? ' popular' : ''}`} key={key}>
-                  <div className="plan-name">{name}{popular && <span className="badge badge-blue">★ Most Popular</span>}</div>
-                  <PriceRow plan={key} type="adult" label="Per Adult" />
-                  <PriceRow plan={key} type="child" label="Per Child" />
+        <div className="f-plans" style={cols}>
+          <div className="f-ph first">Key benefit(s)</div>
+          {plans.map((p) => {
+            const sel = s.plan === p.key, base = planBase(s, p.key);
+            return (
+              <div className={`f-ph ${sel ? 'sel' : ''}`} key={p.key}>
+                <div className="f-pname">{p.name}{p.popular && <span className="f-popular">★ Most popular</span>}{p.note && <span className="f-pnote">{p.note}</span>}</div>
+                <div>
+                  <div className="f-pprice">{fmt(disc(base))}</div>
+                  <div className="f-pwas"><s>{fmt(base)}</s><span className="f-off">–60%</span></div>
                 </div>
-              ))}
-            </div>
-
-            <div className="plan-table-rows">
-              {PLAN_FEATURES.map((row, i) => (
-                <div className="plan-row" key={i}>
-                  <div className={`plan-row-label${row.header ? ' group-header' : ''}`}>{row.label}</div>
-                  <div className="plan-row-val">{row.v}</div>
-                  <div className="plan-row-val popular">{row.p}</div>
-                  <div className="plan-row-val">{row.pro}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="plan-footer">
-              <div className="view-comparison" onClick={() => setCompareOpen(true)} style={{ cursor: 'pointer' }}>
-                View Plan Comparison <ArrowRight />
+                <div className="f-pper">{fmt(disc(PLAN_PRICES[p.key].adult))} per adult<br />{fmt(disc(PLAN_PRICES[p.key].child))} per child</div>
+                <button type="button" className={`f-btn ${sel ? 'f-btn-primary' : 'f-btn-outline'}`} aria-pressed={sel} onClick={() => s.selectPlan(p.key)}>{sel ? 'Selected' : 'Select'}</button>
               </div>
-              <p style={{ fontSize: 14, color: 'var(--gray-500)' }}>For full summary, please refer to <a href="#" onClick={(e) => e.preventDefault()}>policy wording.</a></p>
-            </div>
-          </div>
-          )}
+            );
+          })}
+          {KEY_BENEFITS.map((b) => [
+            <div className="f-pb" key={b.title}><strong>{b.title}</strong><span>{b.desc}</span></div>,
+            ...plans.map((p) => <div className={`f-pv ${s.plan === p.key ? 'sel' : ''}`} key={b.title + p.key}>{b.values[p.key]}</div>),
+          ])}
+        </div>
+
+        <div className="f-more">
+          <button type="button" className="f-link" onClick={() => setCompareOpen(true)}>View Plan Comparison <ArrowRight /></button>
+          <span>For more details, view <a className="f-link" href={POLICY_WORDING_URL} target="_blank" rel="noreferrer">policy wording</a></span>
+        </div>
+
+        <div className="f-actions">
+          <button type="button" className="f-btn f-btn-back" onClick={() => s.goToScreen(1)}>Back</button>
+          <button type="button" className="f-btn f-btn-primary f-push" onClick={s.goToAddons}>Next: Add-Ons</button>
         </div>
       </div>
-
-      <ActionBar onBack={() => s.goToScreen(1)} onSaveDraft={() => setDraftOpen(true)}>
-        <button className="btn-primary" onClick={() => s.goToScreen3()}>Next: Add-Ons →</button>
-      </ActionBar>
+      <div style={{ flex: 1 }} />
       <Footer />
-
-      <SaveDraftModal open={draftOpen} onClose={() => setDraftOpen(false)} />
       <PlanCompareModal open={compareOpen} onClose={() => setCompareOpen(false)} />
     </div>
   );

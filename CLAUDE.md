@@ -18,28 +18,29 @@ There is no linter configured; `tsc --noEmit` (part of `npm run build`) is the t
 
 ## Architecture
 
-This is a 6-screen travel-insurance purchase wizard (UOI UniTravel), converted from a single-file prototype in `raw/index.html` (kept untouched as the reference spec — consult it when behavior is ambiguous).
+A 6-screen travel-insurance purchase wizard (UOI UniTravel). The current flow follows Figma file `ha44Vl566rUvuBidgVoXCM`, node `7340:116778`. `raw/index.html` is the original single-file prototype and is now only a historical reference: where it disagrees with the Figma flow, Figma wins.
 
-**State lives in one Zustand store, screens switch in memory.** There is no router. `usePurchaseStore` holds the entire flow state plus a `currentScreen` number; `App.tsx` renders the matching screen. Navigation happens by calling store actions (`goToScreen2`…`goToScreen5`, `goToScreen`), which also run validation and the screen-entry builders. The loading interstitial is `loading: true` + `currentScreen: 0`.
+Screens: 1 Get a Quote → 0 loading → 2 Select Plan → 3 Select Add-Ons → 4 Traveller Details (Singpass) → 5 Review & Pay → 6 Confirmation.
 
-**Business logic is pure functions in `src/store/selectors.ts`, not in the store or components.** Every derived value (pricing, traveller counts, conflict checks, slot/person builders, display formatting) is a pure function taking `PurchaseState`. Components call them in render; store actions call them to compute next state. When adding logic, put the pure part here and keep the store action thin. This is the file with the test coverage.
+**State lives in one Zustand store, screens switch in memory.** There is no router. `usePurchaseStore` holds the whole flow plus `currentScreen`; `App.tsx` renders the matching screen. Navigation runs through store actions (`checkPrice`, `goToAddons`, `goToTravellers`, `goToReview`, `completePayment`, `goToScreen`), which also validate and build screen data. The loading interstitial is `loading: true` + `currentScreen: 0`.
 
-**Two derived structures are rebuilt on screen entry, not stored continuously:**
-- `addonSlots` — one slot per traveller, derived from `planCounts` (adults first), built in `goToScreen3` via `buildAddonSlots`. Slot IDs (`plus-adult-0`) key the per-traveller add-on selections in `addonPax`.
-- `insuredPersons` — built in `goToScreen4` via `buildInsuredPersons`, which **preserves already-entered name/dob/nric by slot ID** so re-entering the screen doesn't wipe data.
+**Business logic is pure functions in `src/store/selectors.ts`.** Pricing, plan availability, add-on lines, traveller builders and display formatting all take `PurchaseState`. Put new logic there, keep store actions thin, and add tests in `selectors.test.ts`.
 
-**Add-on conflict rules** live in `ADDON_CONFLICTS` (`src/data/addons.ts`) and are enforced through `isSlotBlocked`/`conflictReason`. A pregnant traveller can't also take pre-existing/ski/adventure/golf. After any selection change, `prunedAddonPax` drops now-conflicting selections. Add-ons can be toggled on two screens (the Add-Ons page and per-person on Traveller Details) and both paths must keep `addons`/`addonPax` consistent — see `toggleAddonTraveller` vs `togglePersonAddon`.
+### Product rules
 
-**Constant data tables are in `src/data/`** (`plans.ts`, `addons.ts`, `countries.ts`, `constants.ts`) — pricing, plan/comparison tables, add-on definitions, country lists. These were copied verbatim from `raw/`; edit here, not in components.
-
-### Intentional quirks (preserved from the original — do not "fix")
-
-- The sidebar (`Sidebar/PriceCard.tsx`) **always** applies the 60% promo discount regardless of promo state.
-- The payment modal shows the **undiscounted** `totalCost`, not the discounted sidebar total.
-- `promoApplied` only drives Screen 1's promo UI; it does not affect the sidebar discount.
+- **One policy = one cover type.** Pre-existing conditions cannot be tagged to individual travellers. On the landing page the customer picks **Standard** or **Pre-existing Conditions** for everyone on the policy; travellers with and without pre-existing conditions buy separate policies (the confirmation page offers "Buy another policy").
+- Travellers (adults ≥ 1, children, max 20 in total) are chosen on the landing page, and there is a single plan for the whole policy.
+- Pre-existing Conditions cover is **single trip only** (`prexAvailable`). Switching to annual resets cover to Standard.
+- **Lite** is only offered for ASEAN single trips on Standard cover (`visiblePlans`). Plus is the default plan.
+- On a Pre-existing Conditions policy the pre-ex add-on is listed first, included and locked, at S$30 per traveller.
+- Every add-on is policy-level (no per-traveller selection). Rental vehicle and pet care are counters; the rest are toggles.
+- **TRAVEL60 takes 60% off the whole subtotal** (plan + add-ons), always applied.
+- `insuredPersons` is rebuilt in `goToTravellers` via `buildInsuredPersons`, keeping entered details by id (`adult-0`, `child-1`). "I am the policyholder" copies the applicant's name, DOB and NRIC into one adult.
+- Singpass is a mock: `SingpassFlow` shows the login image (`public/singpass-login.jpg`) with hotspots, then the consent screen; "I Agree" fills and locks the applicant form with a demo profile.
 
 ### Conventions
 
-- Styling is one global stylesheet (`src/styles/global.css`, ported verbatim) plus inline styles for one-off layout matching `raw/`. No CSS modules, no Tailwind.
-- Reusable widgets in `src/components/ui/` are controlled (value + onChange); dropdown/popover close-on-outside-click uses the `useOutsideClick` hook.
-- Add-on icons are inline SVG strings (`AO_ICONS`) rendered via `dangerouslySetInnerHTML`.
+- Styling: `src/styles/flow.css` (`f-` prefixed classes) for all current screens, loaded after `src/styles/global.css`, which still provides the step bar, footer and a few shared widgets. No CSS modules, no Tailwind.
+- Flow building blocks live in `src/components/flow/` (`SiteHeader`, `SummaryCard`, `FDialog`, `DateInput`, `PromoChip`, `SingpassFlow`). Reusable controlled widgets live in `src/components/ui/`; close-on-outside-click uses `useOutsideClick`.
+- Constant tables are in `src/data/` (`plans.ts`, `addons.ts`, `comparison.ts`, `countries.ts`, `constants.ts`). Edit data there, not in components.
+- Brand copy rule: never use ALL CAPS (no `text-transform: uppercase`).

@@ -5,6 +5,9 @@ export const DEST_TYPE_LABELS: Record<string, string> = {
   worldwide: 'Worldwide',
 };
 
+/** Countries that make a trip ASEAN-only (Lite plan eligibility). */
+export const ASEAN_COUNTRIES = ['Brunei', 'Cambodia', 'Indonesia', 'Laos', 'Malaysia', 'Myanmar', 'Philippines', 'Thailand', 'Vietnam'];
+
 export const POPULAR_COUNTRIES = ['Malaysia', 'Thailand', 'Indonesia', 'Hong Kong', 'South Korea'];
 
 export const ALL_COUNTRIES = [

@@ -1,57 +1,55 @@
-import type { Addon } from '../types';
+import type { Addon, AddonKey } from '../types';
 
-export const ADDON_PRICE = 5.6;
-
-export const UNIT_LABEL: Record<string, string> = { group: '/group', pax: '/pax', pet: '/pet' };
-
+/** Policy-level add-ons (Figma 7318:48738), in display order. Each covers every traveller on the policy.
+ *  Pre-existing condition cover only appears on a Pre-existing Conditions policy, where it is included and locked. */
 export const ADDONS: Addon[] = [
-  { key: 'cfar', name: 'Cancel For Any Reason', badge: { t: 'Most Popular', c: 'blue' }, unit: 'group', desc: 'Get reimbursed if you need to cancel your trip for any unforeseen reason. Covers the entire travelling group under one flat fee.' },
-  { key: 'prex', name: 'Pre-Existing Condition', unit: 'pax', desc: 'Up to S$2,000 coverage for treatment of declared pre-existing medical conditions. Select the number of travellers who need this coverage.' },
-  { key: 'preg', name: 'Pregnancy Care', unit: 'pax', adultsOnly: true, desc: 'Up to S$2,000 coverage for unexpected pregnancy medical complications during travel. One add-on covers one traveller.' },
-  { key: 'ski', name: 'Ski & Snowboard Activities', unit: 'pax', noPregnant: true, desc: 'Up to S$5,000 for accidents, medical treatment, and equipment loss during skiing and snowboarding specifically. Coverage does not apply to pregnant individuals.' },
-  { key: 'adv', name: 'Adventure & Sports', unit: 'pax', noPregnant: true, desc: 'Up to S$2,000 for loss, theft, or damage to sports gear and medical treatment during adventure activities. Coverage does not apply to pregnant individuals.' },
-  { key: 'golf', name: 'Golf Play', unit: 'pax', noPregnant: true, desc: 'Up to S$2,000 for golf equipment damage or theft, green fees, and a special hole-in-one benefit. Select per golfer in your group. Coverage does not apply to pregnant individuals.' },
-  { key: 'rental', name: 'Rental Vehicle', unit: 'pax', adultsOnly: true, desc: 'Up to S$2,000 for accidental damage to a rental vehicle and third-party liability. Applies to any driver who will be driving the rental vehicle.' },
-  { key: 'pet', name: 'Pet Care Support', unit: 'pet', desc: "Up to S$2,000 for unexpected vet bills and emergency boarding fees while you're away. Covers pets left at home under one flat fee." },
+  { key: 'prex', name: 'Pre-existing condition', unit: 'traveller', price: 30,
+    desc: "Up to S$100,000 for overseas medical treatment of declared pre-existing conditions. Included with your Pre-existing Conditions plan and can't be removed." },
+  { key: 'cfar', name: 'Cancel for any reason', unit: 'policy', price: 15,
+    desc: 'Get back non-refundable costs if you cancel or cut short your trip for any reason, up to S$5,000' },
+  { key: 'ski', name: 'Ski & snowboard activities', unit: 'policy', price: 40,
+    desc: 'Up to S$5,000 for mountain rescue, and up to S$1,000 for own or hired ski gear and ski passes' },
+  { key: 'adv', name: 'Adventure & sports', unit: 'policy', price: 32,
+    desc: 'Personal accident cover of your plan limit, plus up to S$500 for equipment during adventure activities' },
+  { key: 'golf', name: 'Golf play', unit: 'policy', price: 24,
+    desc: 'Up to S$2,000 for golf equipment damage or theft, S$300 for unused green fees and hole-in-one benefit' },
+  { key: 'rental', name: 'Rental vehicle', unit: 'vehicle', price: 10,
+    desc: 'Up to S$1,500 for rental vehicle damage excess, plus unused rental charges and return assistance' },
+  { key: 'pet', name: 'Pet care support', unit: 'pet', price: 10,
+    desc: 'Up to S$500 if pet care problems make you cancel or extend your trip' },
 ];
 
-/** Add-On category tabs (Figma 4326:30855). */
-export const AO_CATEGORIES: { key: string; label: string; keys: string[] }[] = [
-  { key: 'recommended', label: 'Recommended', keys: ['cfar', 'prex'] },
-  { key: 'lifestyle', label: 'Lifestyle', keys: ['preg', 'rental', 'pet'] },
-  { key: 'activities', label: 'Activities & Sports', keys: ['ski', 'adv', 'golf'] },
-];
-/** Which tab an add-on lives under (used to deep-link the "Select traveller" prompt). */
-export const addonTabFor = (key: string): string =>
-  AO_CATEGORIES.find((c) => c.keys.includes(key))?.key ?? 'recommended';
+export const addonByKey = (key: AddonKey) => ADDONS.find((a) => a.key === key)!;
 
-/** If a traveller already has add-on KEY, the listed add-ons cannot be added for that traveller. */
-export const ADDON_CONFLICTS: Record<string, string[]> = {
-  preg: ['prex', 'ski', 'adv', 'golf'], // pregnant traveller can't have these
-  prex: ['preg'], // pre-existing can't have pregnancy care
-};
-
-export const PERSON_ADDON_LABEL: Record<string, string> = {
-  prex: 'Pre-Existing Condition',
-  preg: 'Pregnancy Care',
-};
-
-export const COVERAGE: Record<string, { title: string; items: string[] }> = {
-  cfar: { title: 'What Cancel For Any Reason covers', items: ['Up to 50% of non-refundable, prepaid trip costs', 'Flights, accommodation and tour deposits', 'Cancellation for any reason not listed in standard cover', 'Applies to the entire travelling group under one flat fee'] },
-  prex: { title: 'What Pre-Existing Condition covers', items: ['Up to S$2,000 for declared pre-existing medical conditions', 'Overseas medical treatment related to the condition', 'Emergency medical assistance', 'Selected per traveller who needs the coverage'] },
-  preg: { title: 'What Pregnancy Care covers', items: ['Up to S$2,000 for unexpected pregnancy complications during travel', 'Overseas medical and hospitalisation expenses', 'Emergency medical evacuation if required', 'One add-on covers one traveller'] },
-  ski: { title: 'List of items covered', items: ['Ski and snowboard equipment', 'Snowboards and boots', 'Lift passes and piste closure', 'Off-piste medical treatment', 'Search and rescue costs'] },
-  adv: { title: 'List of items covered', items: ['Golf clubs', 'Diving gear', 'Skis (boards and poles)', 'Snowboards', 'Wakeboards', 'Bicycles', 'Fishing tackle equipment'] },
-  golf: { title: 'What Golf Play covers', items: ['Golf equipment damage or theft', 'Unused green fees', 'Hole-in-one celebration benefit', 'Selected per golfer in your group'] },
-  rental: { title: 'What Rental Vehicle covers', items: ['Up to S$2,000 for accidental damage to a rental vehicle', 'Third-party liability', 'Applies to any named driver', 'Excess / deductible reimbursement'] },
-  pet: { title: 'What Pet Care Support covers', items: ['Up to S$2,000 for unexpected vet bills', 'Emergency boarding fees while you are away', 'Covers pets left at home under one flat fee'] },
+/** "View coverage details" dialog content (Figma 7344:34221). */
+export const COVERAGE: Record<AddonKey, { intro: string; items: string[] }> = {
+  prex: { intro: 'Benefits that are covered under Pre-existing condition', items: [
+    'Overseas medical expenses: up to S$100,000', 'Emergency evacuation & return home: up to S$200,000',
+    'Overseas hospital & compassionate visit: up to S$10,000', 'Single trips up to 30 days; treatment up to 14 days after onset'] },
+  cfar: { intro: 'Benefits that are covered under Cancel for any reason', items: [
+    'Cancelling your trip: up to S$5,000', 'Postponing your trip or replacing a traveller: up to S$1,000',
+    'Cutting your trip short: up to S$3,000', 'Unused entertainment tickets: up to S$300',
+    '50% co-payment; buy within 14 days of first booking'] },
+  ski: { intro: 'Activities that are covered under Ski & snowboard activities', items: [
+    'Mountain rescue: up to S$5,000', 'Search & rescue: up to S$5,000', 'Own gear loss or damage: up to S$1,000',
+    'Replacement and damaged hired gear', 'Piste or lift closure and avalanche-related delay', 'Unused ski passes (30% co-payment)'] },
+  adv: { intro: 'Activities that are covered under Adventure & sports', items: [
+    'Personal accident cover at 50% of your plan limit', 'Adventure and sports equipment: up to S$500',
+    'Unused prepaid activity expenses (30% co-payment)'] },
+  golf: { intro: 'Benefits that are covered under Golf play', items: [
+    'Loss or damage to golf equipment: up to S$2,000', 'Hired golf equipment: up to S$300 (S$100/day)',
+    'Unused prepaid golf expenses: up to S$300', 'Hole-in-one celebration', 'Golf buggy damage: S$200 (50% co-payment)',
+    'Personal liability during golf: up to S$5,000'] },
+  rental: { intro: 'Benefits that are covered under Rental vehicle', items: [
+    'Rental vehicle damage excess: up to S$1,500', 'Unused rental charges & late fees', 'Rental vehicle return assistance'] },
+  pet: { intro: 'Benefits that are covered under Pet care support', items: [
+    'Pet care cancellation: up to S$500', 'Pet care extension: up to S$500', 'Get-well benefit for pet boarding injury'] },
 };
 
 // Add-On icons (Material-ish, #005EB8) — rendered via dangerouslySetInnerHTML.
-export const AO_ICONS: Record<string, string> = {
+export const AO_ICONS: Record<AddonKey, string> = {
   cfar: '<svg viewBox="0 0 17.7778 17.7778" fill="none"><path d="M2.02722 1.08624C1.76611 0.82513 1.34389 0.82513 1.08555 1.08624C0.827219 1.34735 0.824441 1.76957 1.08277 2.03069L15.7494 16.6974C16.0106 16.9585 16.4328 16.9585 16.6911 16.6974C16.9494 16.4362 16.9522 16.014 16.6911 15.7557L11.5967 10.6612L11.7939 10.4474H15.33C16.1883 10.4474 16.8856 9.75013 16.8856 8.8918C16.8856 8.03346 16.1883 7.33624 15.33 7.33624L11.7967 7.33346L7.37444 2.51124C7.20777 2.32791 6.96889 2.22235 6.71889 2.22235H5.505C5.20222 2.22235 4.98833 2.51957 5.08277 2.80846L5.75222 4.81124L2.02722 1.08624ZM4.505 7.33346H3.82166L2.355 5.50013C2.27166 5.39457 2.14389 5.33346 2.00777 5.33346H1.45777C1.16889 5.33346 0.957775 5.60569 1.02722 5.88624L1.77722 8.88902L1.02722 11.8918C0.954997 12.1724 1.16889 12.4446 1.45777 12.4446H2.00777C2.14389 12.4446 2.27166 12.3835 2.355 12.2779L3.82166 10.4446H6.59111L5.08277 14.9696C4.98555 15.2585 5.20222 15.5557 5.505 15.5557H6.71889C6.96889 15.5557 7.205 15.4501 7.37444 15.2668L9.79666 12.6251L4.505 7.33346Z" fill="#005EB8"/></svg>',
   prex: '<svg viewBox="0 0 18 18" fill="none"><path d="M7.49866 2.25L5.99866 3.75V5.25H3.74866C2.88616 5.25 2.33866 6 2.24866 6.75L1.49866 14.25C1.40866 15 1.90366 15.75 2.99866 15.75H14.9987C16.0937 15.75 16.5887 15 16.4987 14.25L15.7487 6.75C15.6587 6 15.0437 5.25 14.2487 5.25H11.9987V3.75L10.4987 2.25H7.49866ZM7.49866 3.75H10.4987V5.25H7.49866V3.75ZM8.24866 7.5H9.74866V9.75H11.9987V11.25H9.74866V13.5H8.24866V11.25H5.99866V9.75H8.24866V7.5Z" fill="#005EB8"/></svg>',
-  preg: '<svg viewBox="7 7 18 18" fill="none"><path d="M13.375 9C13.375 8.02875 14.1537 7.25 15.125 7.25C16.0963 7.25 16.875 8.02875 16.875 9C16.875 9.97125 16.0963 10.75 15.125 10.75C14.1537 10.75 13.375 9.97125 13.375 9ZM19.5 16.875C19.4955 16.3146 19.3275 15.7677 19.0166 15.3014C18.7057 14.8351 18.2655 14.4697 17.75 14.25C17.75 12.7975 16.5775 11.625 15.125 11.625C13.6725 11.625 12.5 12.7975 12.5 14.25V20.375H14.25V24.75H16.875V20.375H19.5V16.875Z" fill="#005EB8"/></svg>',
   ski: '<svg viewBox="0 0 20 20" fill="none"><path d="M14.9333 11.1C14.725 11.0667 13.925 10.8333 13.7167 10.7417L11.9917 16.1417L9.41667 15.2L11.25 10.3917L8.70833 7.5L10.8333 6.28333C11.2083 7.225 11.8083 8.01667 12.6 8.66667C13.3917 9.31667 14.3 9.725 15.3167 9.88333L16.25 7.025L15.05 6.63333L14.6167 7.96667C14.0667 7.73333 13.5833 7.38333 13.1667 6.93333C12.75 6.475 12.45 5.94167 12.2667 5.34167L11.9917 4.44167C11.8917 4.10833 11.7 3.84167 11.425 3.64167C11.15 3.45 10.8333 3.33333 10.525 3.30833C10.2 3.28333 9.88333 3.33333 9.58333 3.50833L6.66667 5.19167C6.35833 5.36667 6.13333 5.61667 5.99167 5.93333C5.83333 6.25 5.8 6.56667 5.83333 6.90833C5.86667 7.25 6.05 7.55 6.28333 7.80833L9.25833 10.9L7.85 14.6167L2.05833 12.5417L1.66667 13.7167L13.3667 17.9833C14.0167 18.2167 14.7083 18.3333 15.4417 18.3333C15.9583 18.3333 16.4667 18.2667 16.9667 18.1417C17.4583 18.0083 17.9167 17.825 18.3333 17.5917L17.3917 16.6667C16.7667 16.9417 16.1167 17.0833 15.4417 17.0833C14.8917 17.0833 14.3417 16.9917 13.7917 16.8083L13.1667 16.575L14.9333 11.1ZM15.8333 2.5C15.8333 3.425 15.0917 4.16667 14.1667 4.16667C13.2417 4.16667 12.5 3.425 12.5 2.5C12.5 1.575 13.25 0.833333 14.1667 0.833333C15.0833 0.833333 15.8333 1.58333 15.8333 2.5Z" fill="#005EB8"/></svg>',
   adv: '<svg viewBox="6 6 20 20" fill="none"><path d="M21.8333 14.125C21.3667 14.125 20.925 14.2167 20.5083 14.3583L18.05 9.54167H15.1667V10.7917H17.2833L18.0167 12.225L16 16.7333L14.525 13.25C14.75 13.1667 14.95 12.9417 14.95 12.6667C14.95 12.325 14.675 12.0417 14.3333 12.0417H12.6667C12.3167 12.0417 12.0333 12.325 12.0333 12.6667C12.0333 13.0083 12.3167 13.2917 12.6667 13.2917H13.175L15.05 17.6667H14.2667C13.9667 15.6667 12.25 14.125 10.1667 14.125C7.86667 14.125 6 15.9917 6 18.2917C6 20.5917 7.86667 22.4583 10.1667 22.4583C12.25 22.4583 13.9667 20.9167 14.2667 18.9167H16.4167L18.7417 13.65L19.4 14.925C18.8647 15.3084 18.4284 15.8137 18.127 16.3991C17.8256 16.9845 17.6678 17.6332 17.6667 18.2917C17.6667 20.5917 19.5333 22.4583 21.8333 22.4583C24.1333 22.4583 26 20.5917 26 18.2917C26 15.9917 24.1333 14.125 21.8333 14.125ZM10.1667 21.2083C8.55833 21.2083 7.25 19.9 7.25 18.2917C7.25 16.6833 8.55833 15.375 10.1667 15.375C11.5583 15.375 12.725 16.3583 13.0083 17.6667H9.33333V18.9167H13.0083C12.8668 19.5653 12.5079 20.1462 11.9911 20.563C11.4743 20.9797 10.8306 21.2074 10.1667 21.2083ZM21.8333 21.2083C20.225 21.2083 18.9167 19.9 18.9167 18.2917C18.9167 17.3917 19.3333 16.6 19.975 16.0667L21.475 19L22.575 18.4L21.0833 15.4833C21.325 15.425 21.575 15.375 21.8333 15.375C23.4417 15.375 24.75 16.6833 24.75 18.2917C24.75 19.9 23.4417 21.2083 21.8333 21.2083Z" fill="#005EB8"/></svg>',
   golf: '<svg viewBox="0 0 20 20" fill="none"><path d="M3.75 3.12488V16.8749C3.75 17.0406 3.81585 17.1996 3.93306 17.3168C4.05027 17.434 4.20924 17.4999 4.375 17.4999C4.54076 17.4999 4.69973 17.434 4.81694 17.3168C4.93415 17.1996 5 17.0406 5 16.8749V8.54988L10.8575 6.20613C10.9741 6.16006 11.0741 6.08 11.1446 5.97634C11.2151 5.87269 11.2528 5.75024 11.2528 5.62488C11.2528 5.49953 11.2151 5.37708 11.1446 5.27342C11.0741 5.16977 10.9741 5.08971 10.8575 5.04363L4.6075 2.54363C4.51258 2.50559 4.40976 2.49142 4.30809 2.50237C4.20641 2.51332 4.10897 2.54905 4.02432 2.60643C3.93967 2.66381 3.87039 2.74109 3.82256 2.83148C3.77474 2.92187 3.74982 3.02262 3.75 3.12488ZM11.875 13.7499C10.7838 13.7499 9.795 13.8911 9.025 14.1474C8.64125 14.2761 8.30875 14.4299 8.0325 14.6474C7.75625 14.8649 7.5 15.1999 7.5 15.6249C7.5 16.0499 7.755 16.3836 8.0325 16.6011C8.30875 16.8199 8.64125 16.9736 9.02625 17.1011C9.795 17.3586 10.7838 17.4999 11.875 17.4999C12.9675 17.4999 13.955 17.3586 14.725 17.1024C15.1088 16.9736 15.4413 16.8199 15.7175 16.6024C15.9938 16.3849 16.25 16.0499 16.25 15.6249C16.25 15.1999 15.995 14.8661 15.7175 14.6486C15.4413 14.4299 15.1088 14.2761 14.7238 14.1486C13.955 13.8899 12.9675 13.7499 11.875 13.7499Z" fill="#005EB8"/></svg>',

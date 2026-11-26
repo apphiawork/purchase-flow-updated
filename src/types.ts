@@ -1,33 +1,21 @@
-export type PlanKey = 'value' | 'plus' | 'pro';
-export type AddonUnit = 'group' | 'pax' | 'pet';
+export type PlanKey = 'lite' | 'value' | 'plus' | 'pro';
+export type CoverType = 'standard' | 'prex';
+/** Policy-level add-ons switched on/off; rental and pet are counters. Pre-ex is fixed by the cover type. */
+export type ToggleAddonKey = 'cfar' | 'ski' | 'adv' | 'golf';
+export type AddonKey = ToggleAddonKey | 'rental' | 'pet' | 'prex';
 
 export interface Addon {
-  key: string;
+  key: AddonKey;
   name: string;
-  unit: AddonUnit;
   desc: string;
-  badge?: { t: string; c: 'blue' | 'green' };
-  adultsOnly?: boolean;
-  noPregnant?: boolean;
+  /** Base (pre-discount) price. Per vehicle / per pet for counters, per traveller for pre-ex. */
+  price: number;
+  unit: 'policy' | 'vehicle' | 'pet' | 'traveller';
 }
 
-export interface PlanCount {
-  adult: number;
-  child: number;
-}
-
-/** A traveller slot derived from plan counts (Screen 3+). */
-export interface AddonSlot {
-  id: string;
-  plan: PlanKey;
-  type: 'adult' | 'child';
-  label: string;
-}
-
-/** An insured person (Screen 4) — slot data plus editable form fields. */
+/** An insured person on Traveller Details: adults first, then children. */
 export interface InsuredPerson {
   id: string;
-  plan: PlanKey;
   type: 'adult' | 'child';
   label: string;
   name: string;
@@ -61,20 +49,21 @@ export interface PurchaseState {
   selectedCountries: string[];
   departDate: string;
   returnDate: string;
-  promoApplied: boolean;
+  coverType: CoverType;
+  adults: number;
+  children: number;
 
-  planCounts: Record<PlanKey, PlanCount>;
+  plan: PlanKey;
 
-  addons: Record<string, boolean>;
-  addonPax: Record<string, string[]>;
-  addonTab: string;
+  addons: Record<ToggleAddonKey, boolean>;
+  rentalCount: number;
   petCount: number;
-  policyholderSlot: string | null;
 
-  addonSlots: AddonSlot[];
   insuredPersons: InsuredPerson[];
-
+  policyholderId: string | null;
   applicant: Applicant;
+  singpassFilled: boolean;
+  declarationChecked: boolean;
   policyNumber: string;
 
   dialog: DialogState;

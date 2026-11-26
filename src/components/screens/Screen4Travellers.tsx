@@ -1,187 +1,117 @@
 import { useState } from 'react';
-import { usePurchaseStore } from '../../store/usePurchaseStore';
-import { addonsForSlot, personAddonLabel } from '../../store/selectors';
 import type { Applicant, InsuredPerson } from '../../types';
-import TopNav from '../layout/TopNav';
-import QuoteBar from '../layout/QuoteBar';
+import { usePurchaseStore } from '../../store/usePurchaseStore';
+import SiteHeader from '../flow/SiteHeader';
+import SummaryCard from '../flow/SummaryCard';
+import SingpassFlow from '../flow/SingpassFlow';
 import Footer from '../layout/Footer';
-import ActionBar from '../layout/ActionBar';
-import PriceCard from '../Sidebar/PriceCard';
 import DobField from '../ui/DobField';
-import SaveDraftModal from '../modals/SaveDraftModal';
-import { CloseIcon } from '../icons';
 
-/** Read-only summary of the add-ons picked earlier; editing sends the user back to the Add-Ons page. */
-function PersonAddons({ person }: { person: InsuredPerson }) {
-  const s = usePurchaseStore();
-  const addons = addonsForSlot(s, person.id).map(personAddonLabel);
-  return (
-    <div className="ro-addon-section">
-      <div className="ro-addon-head">
-        <span>Selected Add-On(s)</span>
-        <button className="text-link" onClick={() => { s.setAddonTab('recommended'); s.goToScreen(3); }}>Edit</button>
-      </div>
-      <div className="ro-addon-list">{addons.length ? addons.join(', ') : 'None'}</div>
-    </div>
-  );
+const Chevron = ({ up }: { up: boolean }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ transform: up ? undefined : 'rotate(180deg)', transition: 'transform .2s' }} aria-hidden="true"><path d="M12 8.5 6 14.5 7.41 15.91 12 11.33 16.59 15.91 18 14.5z" fill="#6E6E6E" /></svg>
+);
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return <label className="f-field"><span className="f-label"><span className="f-req">*</span>{label}</span>{children}</label>;
 }
 
-function InsuredPersonCard({ person, idx }: { person: InsuredPerson; idx: number }) {
-  const s = usePurchaseStore();
-  const [collapsed, setCollapsed] = useState(false);
-  const phDisabled = !!s.policyholderSlot && s.policyholderSlot !== person.id;
-  const phChecked = s.policyholderSlot === person.id;
-
+function Panel({ title, children }: { title: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(true);
   return (
-    <div className="traveller-section">
-      <div className="traveller-section-header" onClick={() => setCollapsed((c) => !c)}>
-        <h3>{person.label}</h3>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-          style={{ transform: collapsed ? 'rotate(180deg)' : undefined, transition: 'transform .2s' }}><path d="M12 8.5 6 14.5 7.41 15.91 12 11.33 16.59 15.91 18 14.5z" fill="#6E6E6E" /></svg>
+    <section className="f-panel">
+      <div className="f-panel-head">
+        <h2>{title}</h2>
+        <button type="button" className="f-collapse" aria-expanded={open} aria-label={open ? `Collapse ${title}` : `Expand ${title}`} onClick={() => setOpen((o) => !o)}><Chevron up={open} /></button>
       </div>
-      {!collapsed && (
-      <div className="traveller-section-body">
-        <div className="form-group-inline">
-          <div className="form-group">
-            <label className="form-label"><span className="req">*</span> Full Name as per NRIC/FIN</label>
-            <input type="text" className="form-input" placeholder="Enter Full Name"
-              value={person.name} onChange={(e) => s.updatePersonField(idx, 'name', e.target.value)} />
-            {person.type === 'adult' && (
-              <label className={`ph-check ${phDisabled ? 'disabled' : ''}`}>
-                <input type="checkbox" checked={phChecked} disabled={phDisabled} onChange={() => s.togglePolicyholder(idx, person.id)} /> I am the policyholder
-              </label>
-            )}
-          </div>
-          <div className="form-group">
-            <label className="form-label"><span className="req">*</span> Date of Birth</label>
-            <DobField value={person.dob} onChange={(v) => s.updatePersonField(idx, 'dob', v)} />
-          </div>
-        </div>
-        <div className="form-group">
-          <label className="form-label"><span className="req">*</span> NRIC/FIN</label>
-          <input type="text" className="form-input" placeholder="Enter NRIC/FIN" style={{ maxWidth: 320 }}
-            value={person.nric} onChange={(e) => s.updatePersonField(idx, 'nric', e.target.value)} />
-        </div>
-        <PersonAddons person={person} />
-      </div>
-      )}
-    </div>
+      {open && children}
+    </section>
   );
 }
 
 function ApplicantInput({ field, placeholder, type = 'text', disabled = false }: { field: keyof Applicant; placeholder: string; type?: string; disabled?: boolean }) {
   const s = usePurchaseStore();
+  return <input className="f-input" type={type} placeholder={placeholder} disabled={disabled || s.singpassFilled}
+    value={s.applicant[field]} onChange={(e) => s.updateApplicantField(field, e.target.value)} />;
+}
+
+function PersonCard({ person, idx }: { person: InsuredPerson; idx: number }) {
+  const s = usePurchaseStore();
+  const isPh = s.policyholderId === person.id;
+  const phTaken = !!s.policyholderId && !isPh;
   return (
-    <input type={type} className="form-input" placeholder={placeholder} disabled={disabled}
-      style={disabled ? { background: 'var(--bg-disabled-field)', color: 'var(--text-disabled)', cursor: 'not-allowed' } : undefined}
-      value={s.applicant[field]} onChange={(e) => s.updateApplicantField(field, e.target.value)} />
+    <Panel title={person.label}>
+      <div className="f-form-grid">
+        <div className="f-field" style={{ gap: 10 }}>
+          <Field label="Full name as per NRIC/FIN">
+            <input className="f-input" placeholder="Enter full name" value={person.name} onChange={(e) => s.updatePersonField(idx, 'name', e.target.value)} />
+          </Field>
+          {person.type === 'adult' && (
+            <label className={`f-check ${phTaken ? 'disabled' : ''}`}>
+              <input type="checkbox" checked={isPh} disabled={phTaken} onChange={() => s.togglePolicyholder(person.id)} /> I am the policyholder
+            </label>
+          )}
+        </div>
+        <Field label="Date of birth"><DobField value={person.dob} onChange={(v) => s.updatePersonField(idx, 'dob', v)} /></Field>
+        <Field label="NRIC/FIN">
+          <input className="f-input" placeholder="Enter NRIC/FIN" value={person.nric} onChange={(e) => s.updatePersonField(idx, 'nric', e.target.value)} />
+        </Field>
+      </div>
+    </Panel>
   );
 }
 
+/** Enter Traveller Details (Figma 7318:52300 / 55311; Singpass 7318:59660). Applicant first, then one card per traveller. */
 export default function Screen4Travellers() {
   const s = usePurchaseStore();
-  const [bannerOpen, setBannerOpen] = useState(true);
-  const [draftOpen, setDraftOpen] = useState(false);
   const [noUnit, setNoUnit] = useState(false);
-  const [applicantCollapsed, setApplicantCollapsed] = useState(false);
-
+  const [singpass, setSingpass] = useState(false);
   return (
-    <div className="screen active">
-      <TopNav stepNum={3} />
-      <QuoteBar />
-      <div className="page-body">
-        <div className="page-main">
-          <h1 className="page-title">Enter Traveller Details</h1>
-
-          {bannerOpen && (
-            <div className="login-banner">
-              <span>Login to your customer portal to access your personal details and sync purchase! Not a member? <a href="#" onClick={(e) => e.preventDefault()}>Sign up now</a></span>
-              <div className="lb-right">
-                <button className="btn-secondary" style={{ padding: '8px 20px', fontSize: 14 }}>Login</button>
-                <button className="lb-close" onClick={() => setBannerOpen(false)} aria-label="close">
-                  <CloseIcon fill="#949494" size={18} />
-                </button>
-              </div>
+    <div className="f-screen">
+      <SiteHeader step={3} />
+      <div className="f-wrap" style={{ paddingTop: 32 }}><h1 className="f-title">Enter Traveller Details</h1></div>
+      <div className="f-wrap f-page" style={{ paddingTop: 20 }}>
+        <div className="f-main">
+          <div className="f-sp">
+            <div>
+              <strong>Speed up application process with Singpass</strong>
+              <p>Retrieve your personal details securely from Singpass or fill form manually</p>
             </div>
-          )}
-
-          <div className="applicant-section">
-            <div className="applicant-section-header" style={{ marginBottom: applicantCollapsed ? 0 : 16 }} onClick={() => setApplicantCollapsed((c) => !c)}>
-              <h3>Applicant Details</h3>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                style={{ transform: applicantCollapsed ? 'rotate(180deg)' : undefined, transition: 'transform .2s' }}><path d="M12 8.5 6 14.5 7.41 15.91 12 11.33 16.59 15.91 18 14.5z" fill="#6E6E6E" /></svg>
-            </div>
-            {!applicantCollapsed && (<>
-            <button type="button" className="myinfo-btn" onClick={(e) => e.preventDefault()}>
-              <span className="myinfo-main">Retrieve Myinfo</span>
-              <span className="myinfo-sub">with <b>singpass</b></span>
-            </button>
-            <div className="form-group-inline">
-              <div className="form-group">
-                <label className="form-label"><span className="req">*</span> Full Name as per NRIC/FIN</label>
-                <ApplicantInput field="name" placeholder="Enter Full Name" />
-              </div>
-              <div className="form-group">
-                <label className="form-label"><span className="req">*</span> Date of Birth</label>
-                <DobField value={s.applicant.dob} onChange={(v) => s.updateApplicantField('dob', v)} />
-              </div>
-            </div>
-            <div className="form-group-inline">
-              <div className="form-group">
-                <label className="form-label"><span className="req">*</span> NRIC/FIN</label>
-                <ApplicantInput field="nric" placeholder="Enter NRIC/FIN" />
-              </div>
-              <div className="form-group">
-                <label className="form-label"><span className="req">*</span> Phone No.</label>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <input type="text" className="form-input" value="+65" readOnly style={{ width: 60, flexShrink: 0 }} />
-                  <div style={{ flex: 1 }}><ApplicantInput field="phone" placeholder="Enter Phone No." /></div>
-                </div>
-              </div>
-            </div>
-            <div className="form-group-inline">
-              <div className="form-group">
-                <label className="form-label"><span className="req">*</span> Email Address</label>
-                <ApplicantInput field="email" placeholder="Enter Email Address" type="email" />
-              </div>
-              <div className="form-group">
-                <label className="form-label"><span className="req">*</span> Postal Code</label>
-                <div className="input-button-field">
-                  <input className="ibf-input" type="text" placeholder="Enter Postal Code"
-                    value={s.applicant.postal} onChange={(e) => s.updateApplicantField('postal', e.target.value)} />
-                  <button className="btn-search">Search</button>
-                </div>
-              </div>
-            </div>
-            <div className="form-group-inline">
-              <div className="form-group">
-                <label className="form-label"><span className="req">*</span> Address</label>
-                <ApplicantInput field="address" placeholder="Enter Address" />
-              </div>
-              <div className="form-group">
-                <label className="form-label"><span className="req">*</span> Unit No.</label>
-                <ApplicantInput field="unit" placeholder="Enter Unit No." disabled={noUnit} />
-                <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--gray-500)', marginTop: 6, cursor: 'pointer' }}>
-                  <input type="checkbox" checked={noUnit} style={{ accentColor: 'var(--blue-700)' }}
-                    onChange={(e) => { setNoUnit(e.target.checked); if (e.target.checked) s.updateApplicantField('unit', ''); }} /> I don't have unit no.
-                </label>
-              </div>
-            </div>
-            </>)}
+            {s.singpassFilled
+              ? <button type="button" className="f-btn f-btn-back" onClick={s.clearSingpass}>Clear Form</button>
+              : <button type="button" className="f-sp-btn" onClick={() => setSingpass(true)} aria-label="Retrieve with Singpass"><img src="/singpass-btn.png" alt="" /></button>}
           </div>
 
-          {s.insuredPersons.map((person, idx) => <InsuredPersonCard key={person.id} person={person} idx={idx} />)}
+          <Panel title="Applicant details">
+            <div className="f-form-grid">
+              <Field label="Full name as per NRIC/FIN"><ApplicantInput field="name" placeholder="Enter full name" /></Field>
+              <Field label="Date of birth"><DobField value={s.applicant.dob} onChange={(v) => s.updateApplicantField('dob', v)} disabled={s.singpassFilled} /></Field>
+              <Field label="NRIC/FIN"><ApplicantInput field="nric" placeholder="Enter NRIC/FIN" /></Field>
+              <Field label="Phone no.">
+                <div className="f-phone"><input className="f-input" value="+65" readOnly disabled={s.singpassFilled} aria-label="Country code" /><ApplicantInput field="phone" placeholder="Enter phone no." /></div>
+              </Field>
+              <Field label="Email address"><ApplicantInput field="email" placeholder="Enter email address" type="email" /></Field>
+              <Field label="Postal code"><ApplicantInput field="postal" placeholder="Enter postal code" /></Field>
+              <Field label="Address"><ApplicantInput field="address" placeholder="Enter address" /></Field>
+              <div className="f-field" style={{ gap: 10 }}>
+                <Field label="Unit no."><ApplicantInput field="unit" placeholder="Enter unit no." disabled={noUnit} /></Field>
+                {!s.singpassFilled && (
+                  <label className="f-check"><input type="checkbox" checked={noUnit} onChange={(e) => { setNoUnit(e.target.checked); if (e.target.checked) s.updateApplicantField('unit', ''); }} /> I don't have unit no.</label>
+                )}
+              </div>
+            </div>
+          </Panel>
+
+          {s.insuredPersons.map((p, i) => <PersonCard person={p} idx={i} key={p.id} />)}
+
+          <div className="f-actions">
+            <button type="button" className="f-btn f-btn-back" onClick={() => s.goToScreen(3)}>Back</button>
+            <button type="button" className="f-btn f-btn-primary f-push" onClick={s.goToReview}>Next: Review &amp; Pay</button>
+          </div>
         </div>
-
-        <div className="page-sidebar"><PriceCard /></div>
+        <div className="f-side"><SummaryCard /></div>
       </div>
-
-      <ActionBar narrow onBack={() => s.goToScreen(3)} onSaveDraft={() => setDraftOpen(true)}>
-        <button className="btn-primary" onClick={() => s.goToScreen5()}>Next: Review &amp; Pay →</button>
-      </ActionBar>
       <Footer />
-
-      <SaveDraftModal open={draftOpen} onClose={() => setDraftOpen(false)} />
+      {singpass && <SingpassFlow onCancel={() => setSingpass(false)} onAgree={() => { s.retrieveSingpass(); setSingpass(false); window.scrollTo(0, 0); }} />}
     </div>
   );
 }

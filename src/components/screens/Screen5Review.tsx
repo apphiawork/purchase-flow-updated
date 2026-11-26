@@ -1,119 +1,81 @@
 import { useState } from 'react';
 import { usePurchaseStore } from '../../store/usePurchaseStore';
-import { addonsForSlot, fmt, formatDateDisplay, personAddonLabel } from '../../store/selectors';
-import { ADDON_PRICE } from '../../data/addons';
-import TopNav from '../layout/TopNav';
-import QuoteBar from '../layout/QuoteBar';
+import { formatDateDisplay, getDestinationLabel, planLabel, travellersLabel, tripDatesLabel, tripTypeLabel } from '../../store/selectors';
+import { POLICY_WORDING_URL } from '../../data/constants';
+import SiteHeader from '../flow/SiteHeader';
+import SummaryCard from '../flow/SummaryCard';
 import Footer from '../layout/Footer';
-import ActionBar from '../layout/ActionBar';
-import PriceCard from '../Sidebar/PriceCard';
-import PaymentModal from '../modals/PaymentModal';
 import SaveDraftModal from '../modals/SaveDraftModal';
 
-const Field = ({ label, value }: { label: string; value: string }) => (
-  <div className="review-field">
-    <div className="rf-label">{label}</div>
-    <div className="rf-value">{value}</div>
-  </div>
+function Card({ title, onEdit, children }: { title: string; onEdit?: () => void; children: React.ReactNode }) {
+  return (
+    <section className="f-panel">
+      <div className="f-panel-head">
+        <h2>{title}</h2>
+        {onEdit && <button type="button" className="f-link" onClick={onEdit}>Edit</button>}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+const KV = ({ items }: { items: [string, string][] }) => (
+  <dl className="f-kv">{items.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v || '–'}</dd></div>)}</dl>
 );
 
+/** Review & Pay (Figma 7318:60496 / 61785). Confirm & Pay unlocks once the declaration is ticked. */
 export default function Screen5Review() {
   const s = usePurchaseStore();
-  const [agree, setAgree] = useState(false);
-  const [payOpen, setPayOpen] = useState(false);
-  const [draftOpen, setDraftOpen] = useState(false);
-  const ap = s.applicant;
-
-  const confirmPay = () => {
-    if (!agree) { s.showDialog('Confirmation needed', 'Please confirm the declarations before proceeding.'); return; }
-    setPayOpen(true);
-  };
-
+  const [draft, setDraft] = useState(false);
+  const a = s.applicant;
   return (
-    <div className="screen active">
-      <TopNav stepNum={4} />
-      <QuoteBar />
-      <div className="page-body">
-        <div className="page-main">
-          <h1 className="page-title" style={{ marginBottom: 24 }}>Review &amp; Pay</h1>
-
-          <div className="review-section">
-            <div className="review-section-header">
-              <h3>Applicant Details</h3>
-              <button className="text-link" onClick={() => s.goToScreen(4)}>Edit</button>
-            </div>
-            <div className="review-grid">
-              <Field label="Full Name as per NRIC/FIN" value={ap.name || '–'} />
-              <Field label="Date of Birth" value={formatDateDisplay(ap.dob)} />
-              <Field label="NRIC/FIN" value={ap.nric || '–'} />
-              <Field label="Mobile Number" value={ap.phone ? '+65 ' + ap.phone : '–'} />
-              <Field label="Email Address" value={ap.email || '–'} />
-              <Field label="Postal Code" value={ap.postal || '–'} />
-              <Field label="Address" value={ap.address || '–'} />
-              <Field label="Unit No." value={ap.unit || '–'} />
-            </div>
-          </div>
-
-          {s.insuredPersons.map((p) => {
-            const addons = addonsForSlot(s, p.id).map(personAddonLabel);
-            return (
-              <div className="review-section" key={p.id}>
-                <div className="review-section-header">
-                  <h3>{p.label}</h3>
-                  <button className="text-link" onClick={() => s.goToScreen(4)}>Edit</button>
-                </div>
-                <div className="review-grid">
-                  <Field label="Full Name as per NRIC/FIN" value={p.name || '–'} />
-                  <Field label="Date of Birth" value={formatDateDisplay(p.dob)} />
-                  <Field label="NRIC/FIN" value={p.nric || '–'} />
-                  <Field label="Add-On(s)" value={addons.join(', ') || 'None'} />
-                </div>
-              </div>
-            );
-          })}
-
-          {s.addons['pet'] && (
-            <div className="review-section">
-              <div className="review-section-header">
-                <h3>Additional Add-On(s)</h3>
-                <button className="text-link" onClick={() => s.goToScreen(3)}>Edit</button>
-              </div>
-              <div>
-                <Field label="Pet Care Support" value={`1 Pet — ${fmt(ADDON_PRICE)}`} />
-              </div>
-            </div>
-          )}
-
-          <div className="review-section">
-            <div className="tac-section">
-              <p>I confirm that:</p>
+    <div className="f-screen">
+      <SiteHeader step={4} />
+      <div className="f-wrap" style={{ paddingTop: 32 }}><h1 className="f-title">Review &amp; Pay</h1></div>
+      <div className="f-wrap f-page" style={{ paddingTop: 20 }}>
+        <div className="f-main">
+          <Card title="Trip details" onEdit={() => s.goToScreen(1)}>
+            <KV items={[
+              ['Trip type', tripTypeLabel(s)], ['Destination', getDestinationLabel(s)],
+              ['Travel dates', tripDatesLabel(s)], ['Travellers', travellersLabel(s)],
+              ['Plan', planLabel(s)],
+            ]} />
+          </Card>
+          <Card title="Applicant details" onEdit={() => s.goToScreen(4)}>
+            <KV items={[
+              ['Full name as per NRIC/FIN', a.name], ['Date of birth', a.dob ? formatDateDisplay(a.dob) : ''],
+              ['NRIC/FIN', a.nric], ['Phone no.', a.phone ? `+65 ${a.phone}` : ''],
+              ['Email address', a.email], ['Address', [a.address, a.unit, a.postal && `Singapore ${a.postal}`].filter(Boolean).join(', ')],
+            ]} />
+          </Card>
+          {s.insuredPersons.map((p) => (
+            <Card key={p.id} title={`${p.label}${s.policyholderId === p.id ? ' (Policyholder)' : ''}`} onEdit={() => s.goToScreen(4)}>
+              <KV items={[['Full name as per NRIC/FIN', p.name], ['Date of birth', p.dob ? formatDateDisplay(p.dob) : ''], ['NRIC/FIN', p.nric]]} />
+            </Card>
+          ))}
+          <Card title="Terms & conditions">
+            <div className="f-tnc">
               <ul>
-                <li>I am residing in Singapore</li>
-                <li>I am purchasing this travel insurance before my trip has commenced</li>
-                <li>I am not travelling against medical advice</li>
-                <li>I agree to the Terms and Conditions set in the <a href="https://www.uoi.com.sg/assets/web-resources/uoi/pdfs/insurance/unitravel_policywording.pdf" target="_blank" rel="noreferrer">policy wording</a></li>
-                <li>I consent to United Overseas Insurance ("UOI") in collecting, using, disclosing, and processing my personal data in accordance with UOI's <a href="https://www.uoi.com.sg/privacy.page" target="_blank" rel="noreferrer">privacy notice</a></li>
+                <li>I confirm that all travellers are Singapore residents and are in Singapore at the time of purchase.</li>
+                <li>I confirm the information provided is true and complete, and I have not withheld any material facts.</li>
+                <li>I have read and agree to the <a href={POLICY_WORDING_URL} target="_blank" rel="noopener noreferrer">policy wording</a>, including its exclusions.</li>
               </ul>
             </div>
-            <div style={{ marginTop: 16 }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 14, color: '#212121' }}>
-                <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} style={{ accentColor: 'var(--blue-700)' }} />
-                <span>I have read and agree to the above declarations and the policy terms &amp; conditions.</span>
-              </label>
-            </div>
+            <label className="f-check">
+              <input type="checkbox" checked={s.declarationChecked} onChange={(e) => s.setDeclaration(e.target.checked)} />
+              I have read and agree to the declarations and terms &amp; conditions
+            </label>
+          </Card>
+          <div className="f-actions">
+            <button type="button" className="f-btn f-btn-back" onClick={() => s.goToScreen(4)}>Back</button>
+            <button type="button" className="f-btn f-btn-outline f-push" onClick={() => setDraft(true)}>Save Draft</button>
+            <button type="button" className="f-btn f-btn-primary" disabled={!s.declarationChecked} onClick={s.completePayment}>Confirm &amp; Pay</button>
           </div>
         </div>
-
-        <div className="page-sidebar"><PriceCard /></div>
+        <div className="f-side"><SummaryCard /></div>
       </div>
-
-      <ActionBar narrow onBack={() => s.goToScreen(4)} onSaveDraft={() => setDraftOpen(true)}>
-        <button className="btn-primary" onClick={confirmPay}>Confirm &amp; Pay →</button>
-      </ActionBar>
       <Footer />
-
-      <PaymentModal open={payOpen} onClose={() => setPayOpen(false)} />
-      <SaveDraftModal open={draftOpen} onClose={() => setDraftOpen(false)} />
+      <SaveDraftModal open={draft} onClose={() => setDraft(false)} />
     </div>
   );
 }

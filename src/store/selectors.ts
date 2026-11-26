@@ -1,167 +1,93 @@
-import type { Addon, AddonSlot, InsuredPerson, PlanKey, PurchaseState } from '../types';
-import { ADDONS, ADDON_CONFLICTS, ADDON_PRICE, PERSON_ADDON_LABEL } from '../data/addons';
-import { PLAN_PRICES } from '../data/plans';
-import { DEST_TYPE_LABELS } from '../data/countries';
+import type { Addon, AddonKey, InsuredPerson, PlanKey, PurchaseState } from '../types';
+import { ADDONS } from '../data/addons';
+import { PLAN_META, PLAN_PRICES } from '../data/plans';
+import { ASEAN_COUNTRIES, DEST_TYPE_LABELS } from '../data/countries';
+import { PROMO_RATE } from '../data/constants';
 
-const PLANS: PlanKey[] = ['value', 'plus', 'pro'];
+export const PLANS: PlanKey[] = ['lite', 'value', 'plus', 'pro'];
 
-export const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-export const fmt = (n: number) => 'S$' + n.toFixed(2);
+const round2 = (n: number) => Math.round(n * 100) / 100;
+export const fmt = (n: number) => 'S$' + n.toLocaleString('en-SG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+export const planName = (p: PlanKey) => PLAN_META.find((m) => m.key === p)!.name;
 
-export function paxCount(s: PurchaseState, key: string) {
-  return (s.addonPax[key] || []).length;
+// ── Trip & cover ──
+export const travellerCount = (s: Pick<PurchaseState, 'adults' | 'children'>) => s.adults + s.children;
+
+/** Pre-existing Conditions cover is only sold for single trips. */
+export const prexAvailable = (s: Pick<PurchaseState, 'tripType'>) => s.tripType === 'single';
+export const isPrexPolicy = (s: Pick<PurchaseState, 'tripType' | 'coverType'>) => prexAvailable(s) && s.coverType === 'prex';
+
+/** ASEAN region, or every selected country is in ASEAN. Single trips only. */
+export function isAseanTrip(s: Pick<PurchaseState, 'tripType' | 'destination' | 'selectedCountries'>): boolean {
+  if (s.tripType !== 'single') return false;
+  if (s.destination === 'asean') return true;
+  return s.destination === 'countries' && s.selectedCountries.length > 0
+    && s.selectedCountries.every((c) => ASEAN_COUNTRIES.includes(c));
 }
 
-export function addonUnitCost(s: PurchaseState, ao: Addon): number {
-  if (ao.unit === 'pax') return ADDON_PRICE * paxCount(s, ao.key);
-  if (ao.unit === 'pet') return ADDON_PRICE * Math.max(1, s.petCount);
-  return ADDON_PRICE; // group flat
+/** Plans offered: Lite only for ASEAN single trips on Standard cover. */
+export const visiblePlans = (s: PurchaseState): PlanKey[] =>
+  (isAseanTrip(s) && !isPrexPolicy(s) ? PLANS : PLANS.filter((p) => p !== 'lite'));
+
+/** True once the trip-details card is complete, which reveals Cover and travellers. */
+export function tripDetailsComplete(s: PurchaseState): boolean {
+  if (!s.destination || !s.departDate || !s.returnDate) return false;
+  return s.destination !== 'countries' || s.selectedCountries.length > 0;
 }
 
-export function totalPlanCost(s: PurchaseState): number {
-  let t = 0;
-  for (const plan of PLANS) {
-    t += s.planCounts[plan].adult * PLAN_PRICES[plan].adult;
-    t += s.planCounts[plan].child * PLAN_PRICES[plan].child;
-  }
-  return t;
+// ── Pricing (base = before TRAVEL60) ──
+export function planBase(s: Pick<PurchaseState, 'adults' | 'children'>, plan: PlanKey): number {
+  return round2(s.adults * PLAN_PRICES[plan].adult + s.children * PLAN_PRICES[plan].child);
 }
 
-export function totalAddonCost(s: PurchaseState): number {
-  let t = 0;
-  for (const ao of ADDONS) if (s.addons[ao.key]) t += addonUnitCost(s, ao);
-  return t;
+/** Add-ons on the Add-Ons page for this policy (pre-ex only on a Pre-existing Conditions policy, listed first). */
+export const addonsShown = (s: PurchaseState): Addon[] => ADDONS.filter((ao) => ao.key !== 'prex' || isPrexPolicy(s));
+
+/** Price shown on an add-on card. Pre-ex is per traveller on the policy. */
+export function addonCardPrice(s: PurchaseState, ao: Addon): number {
+  return ao.unit === 'traveller' ? ao.price * travellerCount(s) : ao.price;
 }
 
-export const totalCost = (s: PurchaseState) => totalPlanCost(s) + totalAddonCost(s);
-
-export function getTotalTravellers(s: PurchaseState): number {
-  let t = 0;
-  for (const plan of PLANS) t += s.planCounts[plan].adult + s.planCounts[plan].child;
-  return t;
+export function addonSelected(s: PurchaseState, key: AddonKey): boolean {
+  if (key === 'prex') return isPrexPolicy(s);
+  if (key === 'rental') return s.rentalCount > 0;
+  if (key === 'pet') return s.petCount > 0;
+  return !!s.addons[key];
 }
 
-export function totalAdults(s: PurchaseState): number {
-  let a = 0;
-  for (const p of PLANS) a += s.planCounts[p].adult;
-  return a;
-}
-
-export function paxBreakdown(s: PurchaseState, key: string) {
-  const ids = s.addonPax[key] || [];
-  let a = 0, c = 0;
-  for (const id of ids) {
-    const slot = s.addonSlots.find((x) => x.id === id);
-    if (slot) slot.type === 'adult' ? a++ : c++;
-  }
-  return { a, c, total: a + c };
-}
-
-export function paxQtyLabel(s: PurchaseState, key: string): string {
-  const { a, c } = paxBreakdown(s, key);
-  const parts: string[] = [];
-  if (a) parts.push(`${a} Adult${a > 1 ? 's' : ''}`);
-  if (c) parts.push(`${c} Child${c > 1 ? 'ren' : ''}`);
-  return parts.join(', ');
-}
-
-/** "Adult 1 (Plus)" / "Child 1 (Value)" */
-export const slotChipLabel = (slot: AddonSlot) => slot.label.replace(/\s*\(([^)]+) Plan\)/, ' ($1)');
-
-export const personAddonLabel = (ao: Addon) => PERSON_ADDON_LABEL[ao.key] || ao.name;
-
-// ── Conflicts ──
-export function conflictReason(s: PurchaseState, ao: Addon, slotId: string): string | null {
-  for (const [key, conflicts] of Object.entries(ADDON_CONFLICTS)) {
-    if (conflicts.includes(ao.key) && (s.addonPax[key] || []).includes(slotId)) {
-      return ADDONS.find((a) => a.key === key)!.name;
-    }
-  }
-  return null;
-}
-export const isSlotBlocked = (s: PurchaseState, ao: Addon, slotId: string) => !!conflictReason(s, ao, slotId);
-
-/** Slots applicable to an add-on (Pregnancy / Rental = adults only). */
-export function addonSlotsFor(s: PurchaseState, ao: Addon): AddonSlot[] {
-  return ao.adultsOnly ? s.addonSlots.filter((x) => x.type === 'adult') : s.addonSlots;
-}
-
-export interface PersonAddonOption {
-  ao: Addon;
-  checked: boolean;
-  group: boolean;
-  blocked: boolean;
-  reason: string;
-}
-
-/** Editable add-on options for an insured person (Screen 4). Shows ALL add-ons so any can be
- *  toggled per traveller, independent of the Add-Ons page. Pet handled at trip level. */
-export function personAddonOptions(s: PurchaseState, person: InsuredPerson): PersonAddonOption[] {
-  const out: PersonAddonOption[] = [];
-  for (const ao of ADDONS) {
-    if (ao.unit === 'pet') continue;
-    if (ao.unit === 'group') {
-      out.push({ ao, checked: !!s.addons[ao.key], group: true, blocked: false, reason: '' });
-      continue;
-    }
-    if (ao.adultsOnly && person.type !== 'adult') continue;
-    const blocked = isSlotBlocked(s, ao, person.id);
-    const checked = !blocked && !!s.addons[ao.key] && (s.addonPax[ao.key] || []).includes(person.id);
-    out.push({ ao, checked, group: false, blocked, reason: blocked ? conflictReason(s, ao, person.id)! : '' });
-  }
-  return out;
-}
-
-/** Add-ons applicable to a given insured person (slot). */
-export function addonsForSlot(s: PurchaseState, slotId: string): Addon[] {
-  const out: Addon[] = [];
-  for (const ao of ADDONS) {
-    if (!s.addons[ao.key]) continue;
-    if (ao.unit === 'group') { out.push(ao); continue; }
-    if (ao.unit === 'pet') continue;
-    if ((s.addonPax[ao.key] || []).includes(slotId)) out.push(ao);
-  }
-  return out;
-}
-
-// ── Builders (return new values; callers set state) ──
-export function buildAddonSlots(s: PurchaseState): AddonSlot[] {
-  const adults: AddonSlot[] = [], children: AddonSlot[] = [];
-  let adultCount = 0, childCount = 0;
-  for (const plan of PLANS) {
-    for (let i = 0; i < s.planCounts[plan].adult; i++) {
-      adultCount++;
-      adults.push({ id: `${plan}-adult-${i}`, plan, type: 'adult', label: `Adult ${adultCount} (${cap(plan)} Plan)` });
-    }
-    for (let i = 0; i < s.planCounts[plan].child; i++) {
-      childCount++;
-      children.push({ id: `${plan}-child-${i}`, plan, type: 'child', label: `Child ${childCount} (${cap(plan)} Plan)` });
-    }
-  }
-  return [...adults, ...children];
-}
-
-/** Build insured persons from slots, preserving existing name/dob/nric by id. */
-export function buildInsuredPersons(s: PurchaseState): InsuredPerson[] {
-  const prev: Record<string, InsuredPerson> = {};
-  for (const p of s.insuredPersons) prev[p.id] = p;
-  return s.addonSlots.map((slot) => {
-    const old = prev[slot.id];
-    return {
-      id: slot.id, plan: slot.plan, type: slot.type, label: slot.label,
-      name: old?.name || '', dob: old?.dob || '', nric: old?.nric || '',
-    };
+/** Selected add-ons with their base amounts, in display order. */
+export function addonLines(s: PurchaseState): { key: AddonKey; label: string; amount: number }[] {
+  return addonsShown(s).filter((ao) => addonSelected(s, ao.key)).map((ao) => {
+    if (ao.unit === 'vehicle') return { key: ao.key, label: `${ao.name} (x${s.rentalCount})`, amount: ao.price * s.rentalCount };
+    if (ao.unit === 'pet') return { key: ao.key, label: `${ao.name} (x${s.petCount})`, amount: ao.price * s.petCount };
+    return { key: ao.key, label: ao.name, amount: addonCardPrice(s, ao) };
   });
 }
 
-/** Drop any now-conflicting traveller selections. Returns a new addonPax map. */
-export function prunedAddonPax(s: PurchaseState): Record<string, string[]> {
-  const next: Record<string, string[]> = { ...s.addonPax };
-  for (const ao of ADDONS) {
-    const arr = next[ao.key] || [];
-    next[ao.key] = arr.filter((id) => !isSlotBlocked(s, ao, id));
-  }
-  return next;
+/** Any add-on the customer chose themselves (pre-ex is included, not chosen). Drives Skip vs Next. */
+export const hasOptionalAddon = (s: PurchaseState) => addonLines(s).some((l) => l.key !== 'prex');
+
+/** TRAVEL60 takes 60% off the whole subtotal (plan + add-ons). */
+export function totals(s: PurchaseState) {
+  const subtotal = round2(planBase(s, s.plan) + addonLines(s).reduce((a, l) => a + l.amount, 0));
+  const discount = round2(subtotal * PROMO_RATE);
+  return { subtotal, discount, total: round2(subtotal - discount) };
+}
+
+// ── Travellers ──
+/** Adults first, then children; keeps details already entered, matched by id. */
+export function buildInsuredPersons(s: PurchaseState): InsuredPerson[] {
+  const prev: Record<string, InsuredPerson> = {};
+  for (const p of s.insuredPersons) prev[p.id] = p;
+  const make = (type: 'adult' | 'child', i: number): InsuredPerson => {
+    const id = `${type}-${i}`;
+    const old = prev[id];
+    return { id, type, label: `${type === 'adult' ? 'Adult' : 'Child'} ${i + 1}`, name: old?.name ?? '', dob: old?.dob ?? '', nric: old?.nric ?? '' };
+  };
+  return [
+    ...Array.from({ length: s.adults }, (_, i) => make('adult', i)),
+    ...Array.from({ length: s.children }, (_, i) => make('child', i)),
+  ];
 }
 
 // ── Display helpers ──
@@ -171,23 +97,50 @@ export function formatDateDisplay(d: string): string {
   return `${day}/${m}/${y}`;
 }
 
-/** Whole-day trip length (return − depart). null until both dates are set / valid. */
-export function tripDurationDays(s: PurchaseState): number | null {
+/** Trip length counting both the departure and return days (05/01–11/01 = 7 days). null until both dates are valid. */
+export function tripDurationDays(s: Pick<PurchaseState, 'departDate' | 'returnDate'>): number | null {
   if (!s.departDate || !s.returnDate) return null;
-  const diff = (new Date(s.returnDate).getTime() - new Date(s.departDate).getTime()) / (1000 * 60 * 60 * 24);
-  return diff > 0 ? diff : null;
+  const diff = Math.round((new Date(s.returnDate).getTime() - new Date(s.departDate).getTime()) / 86400000);
+  return diff >= 0 ? diff + 1 : null;
 }
 
-export function getTripDays(s: PurchaseState): string {
+export const dayLabel = (n: number) => `${n} day${n === 1 ? '' : 's'}`;
+
+export function tripDatesLabel(s: Pick<PurchaseState, 'departDate' | 'returnDate'>): string {
   const days = tripDurationDays(s);
-  return days != null ? ` (${days} days)` : '';
+  return `${formatDateDisplay(s.departDate)} – ${formatDateDisplay(s.returnDate)}${days != null ? ` (${dayLabel(days)})` : ''}`;
 }
 
-export function getDestinationLabel(s: PurchaseState): string {
-  if (s.destination === 'countries' && s.selectedCountries.length) {
-    return s.selectedCountries.join(', ');
-  }
+export const tripTypeLabel = (s: Pick<PurchaseState, 'tripType'>) => (s.tripType === 'single' ? 'Single Trip' : 'Annual Trip');
+
+export function getDestinationLabel(s: Pick<PurchaseState, 'destination' | 'selectedCountries'>): string {
+  if (s.destination === 'countries' && s.selectedCountries.length) return s.selectedCountries.join(', ');
   return DEST_TYPE_LABELS[s.destination] || (s.destination || '–');
 }
 
-export const generatePolicyNumber = () => 'DHOF' + Date.now().toString().slice(-11);
+/** "2 adult(s), 2 child(ren)" as written in the designs. */
+export function travellersLabel(s: Pick<PurchaseState, 'adults' | 'children'>): string {
+  return [`${s.adults} adult(s)`, s.children ? `${s.children} child(ren)` : null].filter(Boolean).join(', ');
+}
+
+/** "Plus" or "Plus (Pre-existing Conditions)". */
+export const planLabel = (s: PurchaseState) => `${planName(s.plan)}${isPrexPolicy(s) ? ' (Pre-existing Conditions)' : ''}`;
+
+export const generatePolicyNumber = () => 'DHOF' + Date.now().toString().slice(-12);
+
+// ── Typed dates (DD/MM/YYYY) ──
+export function maskDateInput(raw: string): string {
+  const d = raw.replace(/\D/g, '').slice(0, 8);
+  if (d.length <= 2) return d;
+  if (d.length <= 4) return `${d.slice(0, 2)}/${d.slice(2)}`;
+  return `${d.slice(0, 2)}/${d.slice(2, 4)}/${d.slice(4)}`;
+}
+
+export function parseDisplayDate(text: string): string | null {
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(text);
+  if (!m) return null;
+  const [day, month, year] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  const dt = new Date(year, month - 1, day);
+  if (dt.getFullYear() !== year || dt.getMonth() !== month - 1 || dt.getDate() !== day) return null;
+  return `${m[3]}-${m[2]}-${m[1]}`;
+}

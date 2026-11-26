@@ -7,7 +7,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
 /** Date-of-birth field with anchored popover (days / months / years views).
  *  Restyled to match the UniTravel redesign date-picker component (node 4326:32656). */
-export default function DobField({ value, onChange }: { value: string; onChange: (iso: string) => void }) {
+export default function DobField({ value, onChange, disabled = false }: { value: string; onChange: (iso: string) => void; disabled?: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useOutsideClick<HTMLDivElement>(open, () => setOpen(false));
 
@@ -32,13 +32,13 @@ export default function DobField({ value, onChange }: { value: string; onChange:
 
   const pick = (y: number, m: number, d: number) => { onChange(`${y}-${pad(m + 1)}-${pad(d)}`); setOpen(false); };
 
-  const display = value ? `${value.split('-')[2]}/${value.split('-')[1]}/${value.split('-')[0]}` : 'Select Date';
+  const display = value ? `${value.split('-')[2]}/${value.split('-')[1]}/${value.split('-')[0]}` : 'DD/MM/YYYY';
 
   const { year, month, view } = nav;
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
-      <div className={`date-field ${open ? 'open' : ''}`} onClick={openPicker}>
+      <div className={`date-field ${open ? 'open' : ''} ${disabled ? 'disabled' : ''}`} onClick={disabled ? undefined : openPicker} aria-disabled={disabled}>
         <span className={`date-val ${value ? 'filled' : ''}`}>{display}</span>
         <CalFieldIcon />
       </div>
