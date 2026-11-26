@@ -14,3 +14,6 @@ export const MONTH_NAMES = [
   'July', 'August', 'September', 'October', 'November', 'December',
 ];
 export const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+/** Placeholder until the real privacy notice URL is confirmed. */
+export const PRIVACY_NOTICE_URL = 'https://www.uoi.com.sg/';

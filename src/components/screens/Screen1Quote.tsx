@@ -85,7 +85,18 @@ export default function Screen1Quote() {
           <p>Get an instant quote and buy in about 5 minutes</p>
           <div className="f-badges">
             <span className="f-badge-promo">🎉 60% off auto-applied | Ends 31 Dec</span>
-            <span className="f-badge-trust"><b>G</b> 4.3 <span className="f-stars" aria-label="4.3 out of 5">★★★★★</span><span className="f-sep" />Member of the UOB Group</span>
+            <span className="f-badge-trust">
+              <span className="f-rating">
+                <img className="g" src="/icons/google-g.png" alt="Google" />
+                4.3
+                <span className="f-stars" role="img" aria-label="Rated 4.3 out of 5">
+                  {[0, 1, 2, 3].map((i) => <img key={i} src="/icons/star.svg" alt="" />)}
+                  <img src="/icons/star-partial.svg" alt="" />
+                </span>
+              </span>
+              <span className="f-sep" />
+              <span className="f-member"><img src="/icons/uob-shield.svg" alt="" />Member of the UOB Group</span>
+            </span>
           </div>
         </div>
       </section>
@@ -124,7 +135,7 @@ export default function Screen1Quote() {
               <p className="f-hint">
                 {prexAvailable(s)
                   ? <>Standard and Pre-existing Conditions are separate plans. If you need both, buy each one separately. View list of conditions <a href="https://www.uoi.com.sg/" target="_blank" rel="noreferrer" className="f-link">here</a>.</>
-                  : 'Pre-existing Conditions cover is only available for Single Trip policies.'}
+                  : 'Pre-existing Conditions cover is only available for Single Trip policies'}
               </p>
             </div>
             <div className="f-field">

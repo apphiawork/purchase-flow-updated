@@ -115,12 +115,13 @@ export const usePurchaseStore = create<PurchaseState & Actions>((set, get) => ({
 
   checkPrice: () => {
     const s = get();
-    if (!tripDetailsComplete(s)) { get().showDialog('Trip details required', 'Please choose your destination and travel dates.'); return; }
+    if (!tripDetailsComplete(s)) { get().showDialog('Trip details required', 'Please choose your destination and travel dates'); return; }
     // Plus is the default; fall back to it if the previous plan isn't offered for this trip (e.g. Lite outside ASEAN).
     const plan = visiblePlans(s).includes(s.plan) ? s.plan : 'plus';
     set({ plan, loading: true, currentScreen: 0 });
     window.scrollTo(0, 0);
-    setTimeout(() => set({ loading: false, currentScreen: 2 }), 1800);
+    // Skip if the customer left the loading screen (e.g. browser Back) before the quote came back.
+    setTimeout(() => { if (get().loading) set({ loading: false, currentScreen: 2 }); }, 1800);
   },
 
   selectPlan: (plan) => set({ plan }),
@@ -151,8 +152,8 @@ export const usePurchaseStore = create<PurchaseState & Actions>((set, get) => ({
   clearSingpass: () => set({ applicant: emptyApplicant(), singpassFilled: false }),
   goToReview: () => {
     const { applicant } = get();
-    if (!applicant.name) { get().showDialog('Name required', 'Please enter the applicant’s full name.'); return; }
-    if (!applicant.email) { get().showDialog('Email required', 'Please enter the applicant’s email address.'); return; }
+    if (!applicant.name) { get().showDialog('Name required', 'Please enter the applicant’s full name'); return; }
+    if (!applicant.email) { get().showDialog('Email required', 'Please enter the applicant’s email address'); return; }
     set({ currentScreen: 5 });
     window.scrollTo(0, 0);
   },

@@ -1,11 +1,9 @@
-import { useState } from 'react';
 import { usePurchaseStore } from '../../store/usePurchaseStore';
 import { formatDateDisplay, getDestinationLabel, planLabel, travellersLabel, tripDatesLabel, tripTypeLabel } from '../../store/selectors';
-import { POLICY_WORDING_URL } from '../../data/constants';
+import { POLICY_WORDING_URL, PRIVACY_NOTICE_URL } from '../../data/constants';
 import SiteHeader from '../flow/SiteHeader';
 import SummaryCard from '../flow/SummaryCard';
 import Footer from '../layout/Footer';
-import SaveDraftModal from '../modals/SaveDraftModal';
 
 function Card({ title, onEdit, children }: { title: string; onEdit?: () => void; children: React.ReactNode }) {
   return (
@@ -23,10 +21,9 @@ const KV = ({ items }: { items: [string, string][] }) => (
   <dl className="f-kv">{items.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v || '–'}</dd></div>)}</dl>
 );
 
-/** Review & Pay (Figma 7318:60496 / 61785). Confirm & Pay unlocks once the declaration is ticked. */
+/** Review & Pay (Figma 7318:60496 / 61785). Confirm & Pay unlocks once the declaration is ticked */
 export default function Screen5Review() {
   const s = usePurchaseStore();
-  const [draft, setDraft] = useState(false);
   const a = s.applicant;
   return (
     <div className="f-screen">
@@ -55,27 +52,28 @@ export default function Screen5Review() {
           ))}
           <Card title="Terms & conditions">
             <div className="f-tnc">
+              <p>I confirm that:</p>
               <ul>
-                <li>I confirm that all travellers are Singapore residents and are in Singapore at the time of purchase.</li>
-                <li>I confirm the information provided is true and complete, and I have not withheld any material facts.</li>
-                <li>I have read and agree to the <a href={POLICY_WORDING_URL} target="_blank" rel="noopener noreferrer">policy wording</a>, including its exclusions.</li>
+                <li>I am residing in Singapore</li>
+                <li>I am purchasing this travel insurance before my trip has commenced</li>
+                <li>I am not travelling against medical advice</li>
+                <li>I agree to the Terms and Conditions set in the <a href={POLICY_WORDING_URL} target="_blank" rel="noopener noreferrer">policy wording</a></li>
+                <li>I consent to United Overseas Insurance (“UOI”) in collecting, using, disclosing, and processing my personal data in accordance with UOI's <a href={PRIVACY_NOTICE_URL} target="_blank" rel="noopener noreferrer">privacy notice</a></li>
               </ul>
             </div>
-            <label className="f-check">
+            <label className="f-check lg">
               <input type="checkbox" checked={s.declarationChecked} onChange={(e) => s.setDeclaration(e.target.checked)} />
-              I have read and agree to the declarations and terms &amp; conditions
+              I have read and agree to the above declarations and the policy terms &amp; conditions
             </label>
           </Card>
           <div className="f-actions">
             <button type="button" className="f-btn f-btn-back" onClick={() => s.goToScreen(4)}>Back</button>
-            <button type="button" className="f-btn f-btn-outline f-push" onClick={() => setDraft(true)}>Save Draft</button>
-            <button type="button" className="f-btn f-btn-primary" disabled={!s.declarationChecked} onClick={s.completePayment}>Confirm &amp; Pay</button>
+            <button type="button" className="f-btn f-btn-primary f-push" disabled={!s.declarationChecked} onClick={s.completePayment}>Confirm &amp; Pay</button>
           </div>
         </div>
         <div className="f-side"><SummaryCard /></div>
       </div>
       <Footer />
-      <SaveDraftModal open={draft} onClose={() => setDraft(false)} />
     </div>
   );
 }
