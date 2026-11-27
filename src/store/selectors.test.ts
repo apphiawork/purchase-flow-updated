@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { PurchaseState } from '../types';
 import {
-  addonLines, buildInsuredPersons, isAseanTrip, planBase, planUnitPrices, maskDateInput, parseDisplayDate, totals,
+  addonLines, buildInsuredPersons, destinationShort, isAseanTrip, planBase, planUnitPrices, maskDateInput, parseDisplayDate, totals,
   tripDurationDays, visiblePlans,
 } from './selectors';
 
@@ -59,6 +59,11 @@ describe('travellers and dates', () => {
     const people = buildInsuredPersons(s);
     expect(people.map((p) => p.label)).toEqual(['Adult 1', 'Adult 2', 'Child 1', 'Child 2']);
     expect(people[0].name).toBe('Chris');
+  });
+
+  it('shortens long destination lists for the trip bar', () => {
+    expect(destinationShort(makeState())).toBe('Malaysia, Thailand');
+    expect(destinationShort(makeState({ selectedCountries: ['Malaysia', 'Thailand', 'Japan', 'Spain'] }))).toBe('Malaysia, Thailand +2 more');
   });
 
   it('counts both travel days', () => {

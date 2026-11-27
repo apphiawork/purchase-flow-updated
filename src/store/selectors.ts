@@ -118,6 +118,13 @@ export function getDestinationLabel(s: Pick<PurchaseState, 'destination' | 'sele
   return DEST_TYPE_LABELS[s.destination] || (s.destination || '–');
 }
 
+/** Short destination for the trip bar: at most `max` countries, then "+N more" ("Malaysia, Thailand +5 more"). */
+export function destinationShort(s: Pick<PurchaseState, 'destination' | 'selectedCountries'>, max = 2): string {
+  const c = s.destination === 'countries' ? s.selectedCountries : [];
+  if (c.length <= max) return getDestinationLabel(s);
+  return `${c.slice(0, max).join(', ')} +${c.length - max} more`;
+}
+
 /** "2 adult(s), 2 child(ren)" as written in the designs. */
 export function travellersLabel(s: Pick<PurchaseState, 'adults' | 'children'>): string {
   return [`${s.adults} adult(s)`, s.children ? `${s.children} child(ren)` : null].filter(Boolean).join(', ');
