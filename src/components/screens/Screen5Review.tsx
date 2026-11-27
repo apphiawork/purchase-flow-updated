@@ -1,5 +1,5 @@
 import { usePurchaseStore } from '../../store/usePurchaseStore';
-import { formatDateDisplay, getDestinationLabel, planLabel, travellersLabel, tripDatesLabel, tripTypeLabel } from '../../store/selectors';
+import { formatDateDisplay, getDestinationLabel, isPrexPolicy, travellersLabel, tripDatesLabel, tripTypeLabel } from '../../store/selectors';
 import { POLICY_WORDING_URL, PRIVACY_NOTICE_URL } from '../../data/constants';
 import SiteHeader from '../flow/SiteHeader';
 import SummaryCard from '../flow/SummaryCard';
@@ -33,9 +33,9 @@ export default function Screen5Review() {
         <div className="f-main">
           <Card title="Trip details" onEdit={() => s.goToScreen(1)}>
             <KV items={[
-              ['Trip type', tripTypeLabel(s)], ['Destination', getDestinationLabel(s)],
-              ['Travel dates', tripDatesLabel(s)], ['Travellers', travellersLabel(s)],
-              ['Plan', planLabel(s)],
+              ['Trip type', tripTypeLabel(s)], ['Destination(s)', getDestinationLabel(s)],
+              ['Trip duration', tripDatesLabel(s)], ['Travellers', travellersLabel(s)],
+              ['Cover type', isPrexPolicy(s) ? 'Pre-existing Conditions' : 'Standard'],
             ]} />
           </Card>
           <Card title="Applicant details" onEdit={() => s.goToScreen(4)}>
