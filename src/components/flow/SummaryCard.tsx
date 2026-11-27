@@ -2,20 +2,19 @@ import { usePurchaseStore } from '../../store/usePurchaseStore';
 import { addonLines, fmt, planBase, planLabel, totals } from '../../store/selectors';
 import PromoChip from './PromoChip';
 
-/** Order summary (Figma 7318:49903): total, plan with travellers, add-ons, subtotal, TRAVEL60, total incl. GST. */
+/** Order summary (Figma 7286:41002): total, plan, add-ons, subtotal, TRAVEL60, total incl. GST.
+ *  Travellers aren't repeated here; the trip bar shows them. */
 export default function SummaryCard() {
   const s = usePurchaseStore();
   const lines = addonLines(s);
   const { subtotal, discount, total } = totals(s);
-  // Figma: "Adult (x2)" / "Child (x2)" on separate lines
-  const who = [`Adult (x${s.adults})`, s.children ? `Child (x${s.children})` : null].filter(Boolean) as string[];
   return (
     <aside className="f-sum" aria-label="Order summary">
       <div className="f-sum-head"><div className="l">Total amount</div><div className="a">{fmt(total)}</div></div>
       <div className="f-sum-body">
         <div className="f-sum-sec">
           <div className="f-sum-title">Your plan <button type="button" className="f-link" onClick={() => s.goToScreen(2)}>Edit</button></div>
-          <div className="f-sum-line"><span className="k">{planLabel(s)}{who.map((w) => <small key={w}>{w}</small>)}</span><span className="f-sum-amt">{fmt(planBase(s, s.plan))}</span></div>
+          <div className="f-sum-line"><span className="k">{planLabel(s)}</span><span className="f-sum-amt">{fmt(planBase(s, s.plan))}</span></div>
         </div>
         <div className="f-sum-sec">
           <div className="f-sum-title">Add-on(s) <button type="button" className="f-link" disabled={s.currentScreen === 3} onClick={() => s.goToScreen(3)}>Edit</button></div>

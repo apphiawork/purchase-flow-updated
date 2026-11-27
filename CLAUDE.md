@@ -35,6 +35,7 @@ Screens: 1 Get a Quote → 0 loading → 2 Select Plan → 3 Select Add-Ons → 
 - Pre-existing Conditions plans cost **30% more** than Standard (`PREX_LOADING`, applied in `planUnitPrices`). There is no pre-ex add-on: it never appears on Add-Ons or in the summary.
 - Every add-on is policy-level (no per-traveller selection). Rental vehicle and pet care are counters; the rest are toggles.
 - **TRAVEL60 takes 60% off the whole subtotal** (plan + add-ons), always applied.
+- Select Plan, Add-Ons and Traveller Details show `TripBar` under the nav (trip type, destination, dates, travellers, cover) with Edit back to Get Quote; the order summary therefore doesn't repeat travellers.
 - The UOI logo returns to Get Quote (from Confirmation it starts a fresh quote).
 - Browser Back/Forward move between screens (`src/hooks/useBrowserHistory.ts`). The loading screen gets no history entry; Back from the confirmation page starts a fresh quote.
 - `insuredPersons` is rebuilt in `goToTravellers` via `buildInsuredPersons`, keeping entered details by id (`adult-0`, `child-1`). "I am the policyholder" copies the applicant's name, DOB and NRIC into one adult.
@@ -43,7 +44,7 @@ Screens: 1 Get a Quote → 0 loading → 2 Select Plan → 3 Select Add-Ons → 
 ### Conventions
 
 - Styling: `src/styles/flow.css` (`f-` prefixed classes) for all current screens, loaded after `src/styles/global.css`, which still provides the step bar, footer and a few shared widgets. No CSS modules, no Tailwind.
-- Flow building blocks live in `src/components/flow/` (`SiteHeader`, `SummaryCard`, `FDialog`, `DateInput`, `PromoChip`, `SingpassFlow`). Reusable controlled widgets live in `src/components/ui/`; close-on-outside-click uses `useOutsideClick`.
+- Flow building blocks live in `src/components/flow/` (`SiteHeader`, `TripBar`, `SummaryCard`, `FDialog`, `DateInput`, `PromoChip`, `SingpassFlow`). Reusable controlled widgets live in `src/components/ui/`; close-on-outside-click uses `useOutsideClick`.
 - Constant tables are in `src/data/` (`plans.ts`, `addons.ts`, `comparison.ts`, `countries.ts`, `constants.ts`). Edit data there, not in components.
 - Layout follows Figma: nav, banner, page content and footer all centre a container of max 1120px (`.f-wrap`, 32px side padding, 16px on phones). The footer is full-bleed blue with its text aligned to that container.
 - Type scale (Figma): page title 32/600, panel titles 20/600, landing card titles 18/600, body 16, labels 14, captions 12.

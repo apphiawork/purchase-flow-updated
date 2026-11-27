@@ -4,6 +4,7 @@ import { fmt, planBase, planUnitPrices, visiblePlans } from '../../store/selecto
 import { KEY_BENEFITS, PLAN_META } from '../../data/plans';
 import { POLICY_WORDING_URL, PROMO_RATE } from '../../data/constants';
 import SiteHeader from '../flow/SiteHeader';
+import TripBar from '../flow/TripBar';
 import Footer from '../layout/Footer';
 import PlanCompareModal from '../modals/PlanCompareModal';
 import { ArrowRight } from '../icons';
@@ -26,6 +27,7 @@ export default function Screen2Plan() {
   return (
     <div className="f-screen">
       <SiteHeader step={1} />
+      <TripBar />
       <div className="f-wrap" style={{ paddingBlock: '32px 0', display: 'flex', flexDirection: 'column', gap: 24 }}>
         <div>
           <h1 className="f-title">Select Plan</h1>

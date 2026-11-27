@@ -40,6 +40,15 @@ body{background:var(--f-bg);-webkit-font-smoothing:antialiased;-moz-osx-font-smo
 .f-header{background:#fff;border-bottom:1px solid var(--f-line);height:56px;display:flex;align-items:center;flex-shrink:0}
 .f-header .f-wrap{display:flex;align-items:center;justify-content:space-between;gap:24px}
 .f-header .step-nav{flex:0 1 auto;min-width:0}
+/* Trip bar (Figma 7386:27453) */
+.f-tripbar{background:#fff;border-bottom:1px solid var(--f-line);flex-shrink:0}
+.f-tripbar .f-wrap{display:flex;align-items:center;justify-content:space-between;gap:24px;padding-block:8px}
+.f-trip-items{display:flex;align-items:stretch;gap:24px;list-style:none;margin:0;padding:0;min-width:0}
+.f-trip-item{display:flex;align-items:center;gap:8px;font-size:14px;line-height:1.5;color:var(--f-text);white-space:nowrap;min-width:0}
+.f-trip-item img{flex-shrink:0;display:block}
+.f-trip-sep{width:1px;background:var(--f-line);flex-shrink:0}
+.f-btn-sm{flex-shrink:0;background:#fff;border:1px solid var(--f-blue);border-radius:8px;padding:4px 16px;font-family:'Noto Sans',sans-serif;font-size:14px;font-weight:500;line-height:1.5;color:var(--f-blue);cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.f-btn-sm:focus-visible{outline:2px solid var(--f-blue);outline-offset:2px}
 .f-footer{background:var(--f-blue);color:#fff;font-size:14px;line-height:1.5;flex-shrink:0}
 .f-footer .f-wrap{display:flex;justify-content:space-between;gap:16px;padding-block:16px}
 .f-assist{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:var(--f-faint);text-decoration:none}
@@ -153,7 +162,6 @@ body{background:var(--f-bg);-webkit-font-smoothing:antialiased;-moz-osx-font-smo
 .f-sum-title .f-link:disabled{color:var(--f-faint);cursor:default}
 .f-sum-line{display:flex;justify-content:space-between;gap:12px;font-size:14px;line-height:1.5;color:var(--f-text)}
 .f-sum-line .k{color:var(--f-muted)}
-.f-sum-line .k small{display:block;font-size:14px;padding-left:8px;margin-top:8px}
 .f-sum-amt{font-weight:500}
 .f-sum-strong{font-weight:600}
 .f-sum-hr{height:1px;background:var(--f-line);border:none;margin:0}
@@ -276,6 +284,8 @@ body{background:var(--f-bg);-webkit-font-smoothing:antialiased;-moz-osx-font-smo
   .f-footer .f-wrap{flex-direction:column;gap:4px}
 }
 @media(max-width:900px){
+  .f-header .step-label{display:none}
+  .f-header .step.active .step-label{display:inline}
   .f-page{flex-direction:column;align-items:stretch}
   .f-side{width:auto;position:static;order:-1}
   .f-plans{overflow-x:auto}
@@ -287,6 +297,14 @@ body{background:var(--f-bg);-webkit-font-smoothing:antialiased;-moz-osx-font-smo
   .f-hero h1{font-size:22px}
   .f-sp{flex-direction:column;align-items:flex-start}
   .f-header .step-nav~.f-assist{display:none}
+  /* Phones: destination and dates stacked on two lines, Edit on the right */
+  .f-trip-type,.f-trip-who,.f-trip-cover,.f-trip-sep{display:none}
+  .f-trip-items{flex-direction:column;gap:2px;flex:1}
+  .f-trip-item{font-size:12px;line-height:1.4;gap:6px}
+  .f-trip-item img{width:14px;height:14px}
+  .f-trip-dest{display:block;overflow:hidden;text-overflow:ellipsis;padding-left:20px;position:relative}
+  .f-trip-dest img{position:absolute;left:0;top:1px}
+  .f-tripbar .f-wrap{gap:12px}
   .f-actions{flex-wrap:wrap}
 }
 .date-field.disabled{background:#F5F5F5;cursor:not-allowed}.date-field.disabled .date-val{color:#6E6E6E}

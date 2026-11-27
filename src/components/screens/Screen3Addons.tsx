@@ -4,6 +4,7 @@ import { usePurchaseStore } from '../../store/usePurchaseStore';
 import { addonSelected, fmt, hasOptionalAddon } from '../../store/selectors';
 import { ADDONS, AO_ICONS } from '../../data/addons';
 import SiteHeader from '../flow/SiteHeader';
+import TripBar from '../flow/TripBar';
 import SummaryCard from '../flow/SummaryCard';
 import Footer from '../layout/Footer';
 import Toggle from '../ui/Toggle';
@@ -40,6 +41,7 @@ export default function Screen3Addons() {
   return (
     <div className="f-screen">
       <SiteHeader step={2} />
+      <TripBar />
       <div className="f-wrap f-page">
         <div className="f-main">
           <div>
