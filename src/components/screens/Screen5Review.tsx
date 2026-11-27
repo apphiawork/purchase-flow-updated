@@ -41,8 +41,9 @@ export default function Screen5Review() {
           <Card title="Applicant details" onEdit={() => s.goToScreen(4)}>
             <KV items={[
               ['Full name as per NRIC/FIN', a.name], ['Date of birth', a.dob ? formatDateDisplay(a.dob) : ''],
-              ['NRIC/FIN', a.nric], ['Phone no.', a.phone ? `+65 ${a.phone}` : ''],
-              ['Email address', a.email], ['Address', [a.address, a.unit, a.postal && `Singapore ${a.postal}`].filter(Boolean).join(', ')],
+              ['NRIC/FIN', a.nric], ['Mobile number', a.phone ? `+65 ${a.phone}` : ''],
+              ['Email address', a.email], ['Postal code', a.postal],
+              ['Address', a.address], ['Unit no.', a.unit],
             ]} />
           </Card>
           {s.insuredPersons.map((p) => (
