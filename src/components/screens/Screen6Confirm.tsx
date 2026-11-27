@@ -1,6 +1,6 @@
 import { usePurchaseStore } from '../../store/usePurchaseStore';
 import { ADDONS } from '../../data/addons';
-import { addonLines, getDestinationLabel, planLabel, travellersLabel, tripDatesLabel, tripTypeLabel } from '../../store/selectors';
+import { addonLines, getDestinationLabel, isPrexPolicy, planName, travellersLabel, tripDatesLabel, tripTypeLabel } from '../../store/selectors';
 import SiteHeader from '../flow/SiteHeader';
 import Footer from '../layout/Footer';
 
@@ -10,10 +10,12 @@ export default function Screen6Confirm() {
   // Add-on names without counts, as in Figma ("Cancel for any reason, Golf play, Rental vehicle")
   const chosen = new Set(addonLines(s).map((l) => l.key));
   const addons = ADDONS.filter((a) => chosen.has(a.key)).map((a) => a.name).join(', ');
+  // Figma 7318:62662: two columns, in this order
   const rows: [string, string][] = [
-    ['Certificate no.', s.policyNumber], ['Destination(s)', getDestinationLabel(s)],
-    ['Trip type', tripTypeLabel(s)], ['Travel dates', tripDatesLabel(s)],
-    ['Traveller(s)', travellersLabel(s)], ['Plan', planLabel(s)],
+    ['Certificate no.', s.policyNumber], ['Trip type', tripTypeLabel(s)],
+    ['Destination(s)', getDestinationLabel(s)], ['Trip duration', tripDatesLabel(s)],
+    ['Traveller(s)', travellersLabel(s)], ['Cover type', isPrexPolicy(s) ? 'Pre-existing Conditions' : 'Standard'],
+    ['Plan', planName(s.plan)], ['Add-ons', addons || 'Not selected'],
   ];
   return (
     <div className="f-screen">
@@ -25,11 +27,10 @@ export default function Screen6Confirm() {
           <h1 className="f-title">Your policy is confirmed</h1>
           <p className="f-sub">We’ve emailed your Certificate of Insurance to {s.applicant.email || 'your email address'}</p>
         </div>
-        <section className="f-panel">
+        <section className="f-panel f-panel-summary">
           <div className="f-panel-head"><h2>Policy summary</h2></div>
-          <dl className="f-kv">
+          <dl className="f-kv f-kv-summary">
             {rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
-            {addons && <div className="full"><dt>Add-ons</dt><dd>{addons}</dd></div>}
           </dl>
         </section>
         <div className="f-banner">

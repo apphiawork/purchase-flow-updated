@@ -202,6 +202,11 @@ body{background:var(--f-bg);-webkit-font-smoothing:antialiased;-moz-osx-font-smo
 .f-kv dt{font-size:14px;font-weight:500;color:var(--f-muted);margin-bottom:8px}
 .f-kv dd{margin:0;font-size:16px;color:var(--f-text)}
 .f-kv .full{grid-column:1/-1}
+/* Confirmation policy summary (Figma 7318:62662): 18px grid, regular labels 2px above values */
+.f-panel-summary{padding:24px 16px;gap:18px}
+.f-kv-summary{gap:18px}
+.f-kv-summary dt{font-weight:400;margin-bottom:2px;line-height:1.5}
+.f-kv-summary dd{line-height:1.5}
 .f-tnc{border:1px solid var(--f-line);border-radius:8px;padding:16px;font-size:14px;line-height:1.5;color:var(--f-text)}
 .f-tnc p{margin:0}
 .f-tnc ul{margin:0;padding-left:21px}
