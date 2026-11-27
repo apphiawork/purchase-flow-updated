@@ -2,6 +2,7 @@ import { usePurchaseStore } from '../../store/usePurchaseStore';
 import { formatDateDisplay, getDestinationLabel, isPrexPolicy, travellersLabel, tripDatesLabel, tripTypeLabel } from '../../store/selectors';
 import { POLICY_WORDING_URL, PRIVACY_NOTICE_URL } from '../../data/constants';
 import SiteHeader from '../flow/SiteHeader';
+import MobileSummary from '../flow/MobileSummary';
 import SummaryCard from '../flow/SummaryCard';
 import Footer from '../layout/Footer';
 
@@ -28,6 +29,7 @@ export default function Screen5Review() {
   return (
     <div className="f-screen">
       <SiteHeader step={4} />
+      <MobileSummary />
       <div className="f-wrap" style={{ paddingTop: 32 }}><h1 className="f-title">Review &amp; Pay</h1></div>
       <div className="f-wrap f-page" style={{ paddingTop: 20 }}>
         <div className="f-main">

@@ -4,6 +4,7 @@ import { fmt, planBase, planUnitPrices, visiblePlans } from '../../store/selecto
 import { KEY_BENEFITS, PLAN_META } from '../../data/plans';
 import { POLICY_WORDING_URL, PROMO_RATE } from '../../data/constants';
 import SiteHeader from '../flow/SiteHeader';
+import MobileSummary from '../flow/MobileSummary';
 import TripBar from '../flow/TripBar';
 import Footer from '../layout/Footer';
 import PlanCompareModal from '../modals/PlanCompareModal';
@@ -28,6 +29,7 @@ export default function Screen2Plan() {
     <div className="f-screen">
       <SiteHeader step={1} />
       <TripBar />
+      <MobileSummary />
       <div className="f-wrap" style={{ paddingBlock: '32px 0', display: 'flex', flexDirection: 'column', gap: 24 }}>
         <div>
           <h1 className="f-title">Select Plan</h1>
@@ -62,6 +64,38 @@ export default function Screen2Plan() {
               ...plans.map((p) => <div className={`f-pv${edge}${s.plan === p.key ? ' sel' : ''}`} key={b.title + p.key}>{b.values[p.key]}</div>),
             ];
           })}
+        </div>
+
+        {/* Below 1024px (Figma 7401:27572): plan tabs + one plan card instead of the comparison table */}
+        <div className="f-pm">
+          <div className="f-seg f-pm-tabs" role="tablist" aria-label="Plans">
+            {plans.map((p) => (
+              <button type="button" role="tab" key={p.key} aria-selected={s.plan === p.key} className={s.plan === p.key ? 'on' : ''} onClick={() => s.selectPlan(p.key)}>{p.name}</button>
+            ))}
+          </div>
+          {(() => {
+            const p = plans.find((x) => x.key === s.plan) ?? plans[0];
+            const base = planBase(s, p.key), prices = planUnitPrices(s, p.key);
+            return (
+              <div className="f-pm-card" role="tabpanel" aria-label={`${p.name} plan`}>
+                <div className="f-pinfo">
+                  <div className="f-pname">{p.name}{p.popular && <span className="f-popular"><StarIcon /> Most popular</span>}{p.note && <span className="f-pnote">{p.note}</span>}</div>
+                  <div className="f-pprices">
+                    <div className="f-pprice">{fmt(disc(base))}</div>
+                    <div className="f-pwas"><s>{fmt(base)}</s><span className="f-off">–60%</span></div>
+                  </div>
+                  <div className="f-pper"><span>{fmt(disc(prices.adult))} per adult</span><span>{fmt(disc(prices.child))} per child</span></div>
+                </div>
+                <hr className="f-sum-hr" />
+                <h2 className="f-pm-kb">Key benefit(s)</h2>
+                <ul className="f-pm-benefits">
+                  {KEY_BENEFITS.map((b) => (
+                    <li key={b.title}><span><strong>{b.title}</strong>{b.desc}</span><b>{b.values[p.key]}</b></li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })()}
         </div>
 
         <div className="f-more">

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Applicant, InsuredPerson } from '../../types';
 import { usePurchaseStore } from '../../store/usePurchaseStore';
 import SiteHeader from '../flow/SiteHeader';
+import MobileSummary from '../flow/MobileSummary';
 import TripBar from '../flow/TripBar';
 import SummaryCard from '../flow/SummaryCard';
 import SingpassFlow from '../flow/SingpassFlow';
@@ -70,6 +71,7 @@ export default function Screen4Travellers() {
     <div className="f-screen">
       <SiteHeader step={3} />
       <TripBar />
+      <MobileSummary />
       <div className="f-wrap" style={{ paddingTop: 32 }}><h1 className="f-title">Enter Traveller Details</h1></div>
       <div className="f-wrap f-page" style={{ paddingTop: 20 }}>
         <div className="f-main">

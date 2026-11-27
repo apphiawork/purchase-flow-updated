@@ -35,6 +35,7 @@ Screens: 1 Get a Quote → 0 loading → 2 Select Plan → 3 Select Add-Ons → 
 - Pre-existing Conditions plans cost **30% more** than Standard (`PREX_LOADING`, applied in `planUnitPrices`). There is no pre-ex add-on: it never appears on Add-Ons or in the summary.
 - Every add-on is policy-level (no per-traveller selection). Rental vehicle and pet care are counters; the rest are toggles.
 - **TRAVEL60 takes 60% off the whole subtotal** (plan + add-ons), always applied.
+- Below 1024px the mobile layout applies (Figma section "Mobile (393)", `7398:27509`): a numbers-only step bar on its own row, `MobileSummary` (a collapsible "Plan Summary · Total Amount" bar with trip details, plan, add-ons and totals) instead of `TripBar` and the sidebar, plan tabs plus one plan card instead of the comparison table, single-column forms and stacked full-width buttons (primary first).
 - Select Plan, Add-Ons and Traveller Details show `TripBar` under the nav (trip type, destination, dates, travellers, cover) with Edit back to Get Quote; the order summary therefore doesn't repeat travellers.
 - The UOI logo returns to Get Quote (from Confirmation it starts a fresh quote).
 - Browser Back/Forward move between screens (`src/hooks/useBrowserHistory.ts`). The loading screen gets no history entry; Back from the confirmation page starts a fresh quote.
@@ -44,9 +45,9 @@ Screens: 1 Get a Quote → 0 loading → 2 Select Plan → 3 Select Add-Ons → 
 ### Conventions
 
 - Styling: `src/styles/flow.css` (`f-` prefixed classes) for all current screens, loaded after `src/styles/global.css`, which still provides the step bar, footer and a few shared widgets. No CSS modules, no Tailwind.
-- Flow building blocks live in `src/components/flow/` (`SiteHeader`, `TripBar`, `SummaryCard`, `FDialog`, `DateInput`, `PromoChip`, `SingpassFlow`). Reusable controlled widgets live in `src/components/ui/`; close-on-outside-click uses `useOutsideClick`.
+- Flow building blocks live in `src/components/flow/` (`SiteHeader`, `TripBar`, `MobileSummary`, `SummaryCard`, `FDialog`, `DateInput`, `PromoChip`, `SingpassFlow`). Reusable controlled widgets live in `src/components/ui/`; close-on-outside-click uses `useOutsideClick`.
 - Constant tables are in `src/data/` (`plans.ts`, `addons.ts`, `comparison.ts`, `countries.ts`, `constants.ts`). Edit data there, not in components.
 - Layout follows Figma: nav, banner, page content and footer all centre a container of max 1120px (`.f-wrap`, 32px side padding, 16px on phones). The footer is full-bleed blue with its text aligned to that container.
-- Type scale (Figma): page title 32/600, panel titles 20/600, landing card titles 18/600, body 16, labels 14, captions 12.
+- Type scale (Figma): page title 32/600, panel titles 20/600, landing card titles 18/600, body 16, labels 14, captions 12. Below 1024px the library's Mobile styles apply: page title 28, panel titles 18, card titles 16.
 - The page's own scrollbar is hidden; `FloatingScrollbar` draws one that floats over the content so the layout never shifts when a page becomes scrollable. Inner scroll areas keep slim native scrollbars.
 - Brand copy rules: never use ALL CAPS (no `text-transform: uppercase`), and no full stop at the end of copy that is a single one-line sentence.

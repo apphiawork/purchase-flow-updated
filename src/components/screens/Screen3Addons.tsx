@@ -4,6 +4,7 @@ import { usePurchaseStore } from '../../store/usePurchaseStore';
 import { addonSelected, fmt, hasOptionalAddon } from '../../store/selectors';
 import { ADDONS, AO_ICONS } from '../../data/addons';
 import SiteHeader from '../flow/SiteHeader';
+import MobileSummary from '../flow/MobileSummary';
 import TripBar from '../flow/TripBar';
 import SummaryCard from '../flow/SummaryCard';
 import Footer from '../layout/Footer';
@@ -42,6 +43,7 @@ export default function Screen3Addons() {
     <div className="f-screen">
       <SiteHeader step={2} />
       <TripBar />
+      <MobileSummary />
       <div className="f-wrap f-page">
         <div className="f-main">
           <div>

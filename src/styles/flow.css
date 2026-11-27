@@ -284,10 +284,6 @@ body{background:var(--f-bg);-webkit-font-smoothing:antialiased;-moz-osx-font-smo
 /* Toast */
 .f-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;align-items:center;gap:8px;background:#ECFDF5;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:12px 16px;font-size:14px;color:var(--f-text);width:max-content;max-width:calc(100vw - 32px);cursor:pointer}
 
-@media(max-width:600px){
-  .f-wrap,.f-wide{padding-inline:16px}
-  .f-footer .f-wrap{flex-direction:column;gap:4px}
-}
 @media(max-width:900px){
   .f-header .step-label{display:none}
   .f-header .step.active .step-label{display:inline}
@@ -296,21 +292,75 @@ body{background:var(--f-bg);-webkit-font-smoothing:antialiased;-moz-osx-font-smo
   .f-plans{overflow-x:auto}
   .f-ao-grid,.f-form-grid,.f-kv{grid-template-columns:1fr}
 }
-@media(max-width:640px){
+/* Mobile summary bar + mobile plan card: phones only */
+.f-msum,.f-pm{display:none}
+.f-msum{background:#fff;border-bottom:1px solid var(--f-line);flex-shrink:0}
+.f-msum-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:none;border:0;cursor:pointer;text-align:left;font-family:'Noto Sans',sans-serif;color:var(--f-text)}
+.f-msum-head>span{display:flex;flex-direction:column;gap:2px}
+.f-msum-head strong{font-size:16px;font-weight:600;line-height:1.5}
+.f-msum-total{font-size:14px;line-height:1.4}
+.f-msum-head svg{flex-shrink:0;transition:transform .2s}
+.f-msum.open .f-msum-head svg{transform:rotate(180deg)}
+.f-msum-head:focus-visible{outline:2px solid var(--f-blue);outline-offset:-2px}
+.f-msum-body{margin:0 16px;padding-block:16px;border-top:1px solid var(--f-line);display:flex;flex-direction:column;gap:20px}
+.f-msum-body .f-sum-body{padding:0}
+.f-msum-trip{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.f-msum-trip li{display:flex;align-items:flex-start;gap:8px;font-size:14px;line-height:1.4;color:var(--f-text)}
+.f-msum-trip img{flex-shrink:0;margin-top:1px}
+@media(prefers-reduced-motion:reduce){.f-msum-head svg{transition:none}}
+.f-pm{flex-direction:column;gap:16px}
+.f-pm-card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.05);padding:16px;display:flex;flex-direction:column;gap:16px}
+.f-pm-kb{font-size:16px;font-weight:600;line-height:1.5;color:var(--f-text);margin:0}
+.f-pm-benefits{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
+.f-pm-benefits li{display:flex;justify-content:space-between;gap:12px}
+.f-pm-benefits li>span{display:flex;flex-direction:column;gap:4px;font-size:13px;line-height:1.4;color:var(--f-muted);min-width:0}
+.f-pm-benefits strong{font-size:14px;font-weight:600;line-height:1.5;color:var(--f-text)}
+.f-pm-benefits b{font-size:14px;font-weight:600;line-height:1.5;color:var(--f-text);white-space:nowrap}
+
+/* Phones and tablets (below 1024px, where the desktop table and sidebar no longer fit) use the mobile layout
+   (Figma "Mobile (393)" 7398:27509): 16px margins, Mobile type scale, stacked layouts */
+@media(max-width:1023px){
+  .f-wrap,.f-wide{padding-inline:16px}
+  /* header: logo row, then a numbers-only step bar on its own row */
+  .f-header{height:auto;min-height:56px}
+  .f-header .f-wrap{flex-wrap:wrap;gap:0}
+  .f-header .logo{height:56px;display:flex;align-items:center}
+  .f-header .f-assist{display:flex}
+  .f-header .step-nav{order:3;flex:1 0 100%;margin-inline:-16px;padding:12px 16px;border-top:1px solid var(--f-line);justify-content:space-between}
+  .f-header .step-label,.f-header .step.active .step-label{display:none}
+  .f-header .step-connector{flex:1;width:auto;margin:0 8px}
+  /* the summary bar replaces the trip bar and the sidebar */
+  .f-tripbar,.f-side{display:none}
+  .f-msum{display:block}
+  .f-plans{display:none}
+  .f-pm{display:flex}
+  .f-pm-tabs button{padding:8px 4px}
+  /* type scale */
+  .f-title{font-size:28px}
+  .f-hero h1{font-size:28px}
+  .f-card-title{font-size:16px}
+  .f-panel-head h2{font-size:18px}
+  .f-pname,.f-pprice{font-size:18px}
+  .f-ao h3{font-size:16px}
+  .f-banner h2{font-size:16px}
+  /* landing */
+  .f-hero{height:auto}
+  .f-hero .f-wide{padding-block:20px}
+  .f-badges{gap:8px;margin-top:4px}
   .f-row{grid-template-columns:1fr}
-  .f-title{font-size:26px}
-  .f-hero h1{font-size:22px}
+  .f-seg[aria-label="Cover"] button{font-size:14px;padding-inline:4px;white-space:nowrap}
+  .f-field>.f-row{grid-template-columns:1fr 1fr} /* adults / children stay side by side */
+  .f-field>.f-row>.f-field{justify-content:space-between} /* steppers line up when a label wraps */
+  .f-cta-row .f-btn{width:100%}
+  /* pages */
+  .f-page{padding-block:20px 0}
   .f-sp{flex-direction:column;align-items:flex-start}
-  .f-header .step-nav~.f-assist{display:none}
-  /* Phones: destination and dates stacked on two lines, Edit on the right */
-  .f-trip-type,.f-trip-who,.f-trip-cover,.f-trip-sep{display:none}
-  .f-trip-items{flex-direction:column;gap:2px;flex:1}
-  .f-trip-item{font-size:12px;line-height:1.4;gap:8px}
-  .f-trip-item img{width:14px;height:14px}
-  .f-trip-dest{display:block;overflow:hidden;text-overflow:ellipsis;padding-left:22px;position:relative}
-  .f-trip-dest img{position:absolute;left:0;top:1px}
-  .f-tripbar .f-wrap{gap:12px}
-  .f-actions{flex-wrap:wrap}
+  .f-actions{flex-direction:column-reverse;align-items:stretch;gap:12px;padding-block:24px 32px}
+  .f-actions .f-btn{width:100%}
+  .f-actions .f-push{margin-left:0}
+  .f-banner{flex-direction:column;align-items:stretch}
+  .f-banner .f-btn{width:100%}
+  .f-footer .f-wrap{flex-direction:column;align-items:center;text-align:center;gap:4px}
 }
 .date-field.disabled{background:#F5F5F5;cursor:not-allowed}.date-field.disabled .date-val{color:#6E6E6E}
 .f-dialog-sm{width:440px}
