@@ -300,9 +300,9 @@ body{background:var(--f-bg);-webkit-font-smoothing:antialiased;-moz-osx-font-smo
   /* Phones: destination and dates stacked on two lines, Edit on the right */
   .f-trip-type,.f-trip-who,.f-trip-cover,.f-trip-sep{display:none}
   .f-trip-items{flex-direction:column;gap:2px;flex:1}
-  .f-trip-item{font-size:12px;line-height:1.4;gap:6px}
+  .f-trip-item{font-size:12px;line-height:1.4;gap:8px}
   .f-trip-item img{width:14px;height:14px}
-  .f-trip-dest{display:block;overflow:hidden;text-overflow:ellipsis;padding-left:20px;position:relative}
+  .f-trip-dest{display:block;overflow:hidden;text-overflow:ellipsis;padding-left:22px;position:relative}
   .f-trip-dest img{position:absolute;left:0;top:1px}
   .f-tripbar .f-wrap{gap:12px}
   .f-actions{flex-wrap:wrap}
